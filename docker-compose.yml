@@ -1,0 +1,112 @@
+services:
+
+  # Postgres
+  pg:
+    hostname: pg
+    image: postgres:16.3-alpine3.20
+    env_file:
+      - ./.env
+    networks:
+      - db-net
+    volumes:
+      - postgress_db:/var/lib/postgresql/data/db-files/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U flask_app" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Api  
+  api:
+    hostname: api
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile.app
+    volumes:
+      - app-logs:/app/api/api/logs
+    env_file:
+      - ./.env
+    depends_on:
+      pg:
+        condition: service_healthy
+    networks:
+      - app-net
+      - db-net
+      - monitor-net
+    restart: always
+      
+  # Nginx  
+  nginx:
+    hostname: nginx
+    image: nginx:1.24
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - app-net
+      - grafana-net
+    restart: always
+
+  # Promtail  
+  promtail:
+    hostname: promtail
+    image: grafana/promtail:2.4.0
+    volumes:
+      - app-logs:/var/log/
+      - promtail_data:/etc/promtail
+      - ./config/promtail-config.yaml:/etc/promtail/config.yaml
+    restart: unless-stopped
+    networks:
+      - log-net
+
+  # Loki  
+  loki:
+    hostname: loki
+    image: grafana/loki:2.9.6
+    volumes:
+      - loki_data:/etc/loki
+      - ./config/loki-config.yaml:/etc/loki/local-config.yaml
+    restart: unless-stopped
+    networks:
+      - log-net
+
+  # Grafana  
+  grafana:
+    hostname: grafana
+    image: grafana/grafana:11.0.0
+    env_file:
+      - ./.env
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=your_password_here
+    volumes:
+    - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+    networks:
+      - log-net
+      - grafana-net
+
+  # Prometheus  
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus-config.yaml:/etc/prometheus/prometheus.yml
+    networks:
+      - log-net
+      - monitor-net
+
+volumes:
+  postgress_db:
+  app-logs:
+  promtail_data:
+  loki_data:
+  grafana_data:
+
+networks:
+  app-net:
+  db-net:
+  log-net:
+  monitor-net:
+  grafana-net:

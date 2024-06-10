@@ -1,0 +1,16 @@
+# Python image
+FROM python:3.9-slim
+
+# Setting a work dir
+WORKDIR /app
+
+# Copy and install dependencies
+COPY ./api/requirements.txt .
+RUN pip install -r requirements.txt
+
+# Copy application
+COPY ./api/app ./app
+COPY ./api/run.py ./run.py
+
+# Run Flask application production
+CMD ["gunicorn", "run:app", "--bind", "0.0.0.0:5000", "--workers", "2"]
