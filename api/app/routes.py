@@ -296,7 +296,7 @@ def delete_api_key(user):
 ############################## STRIPE PAYMENT ################################
 ##############################################################################
 
-@app.route('/v1/checkout-session', methods=['POST'])
+@app.route('/v1/checkout-session', methods=['POST']) # Stripe checkout session
 @validate_jwt
 def create_checkout_session(user):
     try:
@@ -310,8 +310,8 @@ def create_checkout_session(user):
                 },
             ],
             mode='payment',
-            success_url=BASE_URL_FRONT + 'successful-payment',
-            cancel_url=BASE_URL_FRONT + 'subscribe',
+            success_url=os.getenv('PROD_APP_PAYMENT_COMPLETE_URL'),
+            cancel_url=os.getenv('PROD_APP_PAYMENT_FAILD_URL'),
             metadata={'user_id': user.id, 'credits': credits},
         )
 
@@ -320,12 +320,10 @@ def create_checkout_session(user):
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/stripe-callaback', methods=['POST'])
+@app.route('/stripe-callaback', methods=['POST']) # Stripe event callback
 def webhook():
-    endpoint_secret = os.getenv('STRIPE_ENDPOINT_SECRET')
 
-    # Testing
-    # endpoint_secret = 'whsec_0728905781c2146bc1a4fb1fe9f5bcbd19b55fdf07d534c8b33a431ec00c1daf'
+    endpoint_secret = os.getenv('STRIPE_ENDPOINT_SECRET', os.getenv('STRIPE_TESTING_KEY'))
 
     payload = request.data
     sig_header = request.headers['STRIPE_SIGNATURE']
