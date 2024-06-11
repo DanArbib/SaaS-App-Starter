@@ -114,7 +114,6 @@ services:
     ports:
       - "3000:3000"
 
-
   # Prometheus  
   prometheus:
     image: prom/prometheus:latest
@@ -123,6 +122,41 @@ services:
     networks:
       - log-net
       - monitor-net
+
+  # Redis  
+  redis:
+    hostname: redis
+    image: "redis:7.0.15-alpine"
+    restart: always
+    networks:
+      - redis_net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # RabbitMQ  
+  rabbit:
+    hostname: rabbit
+    image: "rabbitmq:3.13.3"
+    restart: always
+    networks:
+      - redis_net
+      - app-net
+    env_file:
+      - ./.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c '
+        rabbitmq-plugins enable rabbitmq_management;
+        rabbitmq-server
+      '
 
 volumes:
   postgress_db:
@@ -137,3 +171,4 @@ networks:
   log-net:
   monitor-net:
   grafana-net:
+  redis_net:
