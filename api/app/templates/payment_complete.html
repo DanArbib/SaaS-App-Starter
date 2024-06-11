@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Aipixy</title>
+    <title>Thank you for your payment to {{ app_name }}</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -108,7 +108,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img class="logo" src="{{ logo }}" alt="Aipixy Logo">
+            <img class="logo" src="{{ logo }}" alt="{{ app_name }} Logo">
         </div>
 
         <div class="content">
@@ -116,18 +116,18 @@
 
             <p>Thank you for your payment! Your order has been successfully processed, and we've topped up your account with {{ added_credit }} credits.</p>
 
-            <a class="button" href="{{ main_page }}" style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Create a video</a>
+            <a class="button" href="{{ app_link }}" style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Login</a>
 
             <div class="help-wrap">
                 <p>
-                Need assistance? If you have any questions or require further support, feel free to reach out to our team. We're here to assist you!
-                <a href="mailto:support@aipixy.com">support@aipixy.com</a>
+                Need help? If you have any questions or need assistance with getting started, please contact our support team or reply to this email. We're always here to help!
+                <a href="mailto:{{ support_email }}">{{ support_email }}</a>
                 </p>
             </div>
         </div>
 
         <div class="footer">
-            <p>Best regards,<br>Aipixy Team</p>
+            <p>Best regards,<br>{{ app_name }}</p>
         </div>
     </div>
 </body>

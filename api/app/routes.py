@@ -1,9 +1,9 @@
 from flask import request, jsonify, redirect, url_for, session
 from authlib.common.security import generate_token
-from app import app, db, logger, bcrypt_app, oauth
-from app.models.user import User, UserApiKeys
+from app import app, db, logger, bcrypt_app, oauth, stripe
+from app.models.user import User, UserApiKeys, UserType
 from app.utils.decorators import validate_jwt
-from app.utils.emails import confirmation_email, welcome_email, password_change_email
+from app.utils.emails import confirmation_email, welcome_email, password_change_email, payment_complete_email
 from datetime import datetime, timedelta, timezone
 from threading import Thread
 import secrets
@@ -99,10 +99,9 @@ def confirm_email(token):
             user.email_is_verify = True
             user.confirmation_token = None
             db.session.commit()
-            app_link = os.environ.get("PROD_APP_URL")
             email = str(user.email)
             user_name = email.split('@')[0]
-            Thread(target=welcome_email, args=(email, user_name, app_link)).start()
+            Thread(target=welcome_email, args=(email, user_name)).start()
             return redirect(os.environ.get('PROD_APP_LOGIN_URL'))
         return redirect(os.environ.get('PROD_APP_LOGIN_URL'))
     except Exception as e:
@@ -208,9 +207,8 @@ def google_auth():
             user_id = new_user.id
 
             # Send confirmation email
-            app_link = f'{os.environ.get("PROD_APP_URL")}'
             user_name = email.split('@')[0]
-            Thread(target=welcome_email, args=(email, user_name, app_link)).start()
+            Thread(target=welcome_email, args=(email, user_name)).start()
 
         else:
             user_id = user.id
@@ -292,3 +290,76 @@ def delete_api_key(user):
     except Exception as e:
         logger.error(f"Failed to delete api key: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to delete api key'}), 500
+
+
+##############################################################################
+############################## STRIPE PAYMENT ################################
+##############################################################################
+
+@app.route('/v1/checkout-session', methods=['POST'])
+@validate_jwt
+def create_checkout_session(user):
+    try:
+        credits = request.json.get('credits')
+        product_id = request.json.get('productId')
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    'price': product_id,
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=BASE_URL_FRONT + 'successful-payment',
+            cancel_url=BASE_URL_FRONT + 'subscribe',
+            metadata={'user_id': user.id, 'credits': credits},
+        )
+
+        return jsonify({'checkout_session_url': checkout_session.url}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/stripe-callaback', methods=['POST'])
+def webhook():
+    endpoint_secret = os.getenv('STRIPE_ENDPOINT_SECRET')
+
+    # Testing
+    # endpoint_secret = 'whsec_0728905781c2146bc1a4fb1fe9f5bcbd19b55fdf07d534c8b33a431ec00c1daf'
+
+    payload = request.data
+    sig_header = request.headers['STRIPE_SIGNATURE']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        logger.info(f"Invalid payload. {e}")
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        logger.info(f"Invalid signature. {e}")
+        raise e
+
+    if event['type'] == 'checkout.session.completed':
+
+        user_id = event['data']['object']['metadata']['user_id']
+        credits = event['data']['object']['metadata']['credits']
+        logger.info(f"Checkout session completed. {user_id} - {credits}")
+
+        # Update user credits
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            user.credits += int(credits)
+            user.subscription = UserType.SUBSCRIPTION
+            db.session.commit()
+            user_name = email.split('@')[0]
+            Thread(target=payment_complete_email, args=(user.email, user_name, credits)).start()
+
+            return jsonify({'Credit update': True, 'message': 'Credits updated successfully'})
+
+        logger.warning(f"Issue with finding user to complete checkout {event['data']} .")
+        return jsonify({'error': 'User was not found'}), 500
+
+    logger.warning(f"Error processing Stripe event .")
+    return jsonify({'error': ''}), 500

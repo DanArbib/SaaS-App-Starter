@@ -6,6 +6,7 @@ import os
 APP_NAME = os.environ.get("APP_NAME")
 LOGO_URL = os.environ.get("PROD_APP_LOGO_URL")
 APP_SUPPORT_EMAIL = os.environ.get("APP_SUPPORT_EMAIL")
+PROD_APP_URL = os.environ.get("PROD_APP_URL")
 
 def confirmation_email(email, user_name, verification_link_app):
     with app.app_context():
@@ -19,20 +20,34 @@ def confirmation_email(email, user_name, verification_link_app):
             logger.info(f"Verification email to - {email} sent successfully")
         except Exception as e:
             mail.send(e)
-            logger.error(f'Error sending email: {e}')
+            logger.error(f'Error sending verification email: {e}')
 
 
-def welcome_email(email, user_name, app_link):
+def welcome_email(email, user_name):
     with app.app_context():
         try:
             subject = f'Welcome to {APP_NAME}!'
-            html_body = render_template('welcome_email.html', user_name=user_name, app_link=app_link,
+            html_body = render_template('welcome_email.html', user_name=user_name, app_link=PROD_APP_URL,
                                         logo=LOGO_URL, support_email=APP_SUPPORT_EMAIL, app_name=APP_NAME)
             msg = Message(subject, recipients=[email], html=html_body)
             mail.send(msg)
             logger.info(f"Welcome email to - {email} sent successfully")
         except Exception as e:
-            logger.error(f'Error sending email: {e}')
+            logger.error(f'Error sending welcome email: {e}')
+
+
+def payment_complete_email(email, user_name, credits):
+    with app.app_context():
+        try:
+            subject = 'Thanks for your payment'
+            html_body = render_template('payment_complete.html', user_name=user_name,
+                                        logo=LOGO_URL, app_link=PROD_APP_URL, added_credit=credits,
+                                        app_name=APP_NAME, support_email=APP_SUPPORT_EMAIL)
+            msg = Message(subject, recipients=[email], html=html_body)
+            mail.send(msg)
+            logger.info(f"Payment complete email to - {email} sent successfully")
+        except Exception as e:
+            logger.error(f'Error sending payment complete email: {e}')
 
 
 def reset_password_email(email, user_name, verification_link):

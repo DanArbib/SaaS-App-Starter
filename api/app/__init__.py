@@ -2,6 +2,7 @@ from flask import Flask, request
 from .extensions import db
 from dotenv import load_dotenv
 import pika
+import stripe
 import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -46,6 +47,9 @@ RABBITMQ_DEFAULT_PASS = os.environ.get('RABBITMQ_DEFAULT_PASS')
 # Google Auth
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+
+# Stripe
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 
 # Flask config
 app = Flask(__name__)
@@ -115,6 +119,9 @@ credentials = pika.PlainCredentials(username=RABBITMQ_DEFAULT_USER, password=RAB
 rmq_connection = pika.BlockingConnection(
     pika.ConnectionParameters(heartbeat=10, host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
 rabbitmq = rmq_connection.channel()
+
+# Stripe
+stripe.api_key = STRIPE_SECRET_KEY
 
 # Database initialization
 db.init_app(app)
