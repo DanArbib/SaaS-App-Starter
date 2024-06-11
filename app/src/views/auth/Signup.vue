@@ -80,24 +80,17 @@
         }
 
         this.is_sending = true
-
-        // Make an HTTP request to your backend
-        axios.post('/sign', { email: this.email, password: this.password })
+        axios.post('/api/v1/sign', { email: this.email, password: this.password })
         .then(response => {
-            // Check the status from the server response
             const status = response.data.status;
-
-            if (response.status === 200 && status === 'Signed up successfully, confirmation email was sent.') {
-            // Successfully signed up
+            if (response.status === 200) {
             this.$router.push({ name: 'verification' });
             } else {
-            // Handle other cases, e.g., display an error message
             this.error = status || 'An error occurred while processing your request.';
             this.$router.push({ name: 'signup' });
             }
         })
         .catch(error => {
-            // Handle errors, e.g., display an error message
             this.error = 'An error occurred while processing your request.';
             console.error(error);
             this.is_sending = false

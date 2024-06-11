@@ -1,13 +1,17 @@
-from flask import Flask
+from flask import Flask, request
 from .extensions import db
 from dotenv import load_dotenv
 import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
+from authlib.integrations.flask_client import OAuth
 from pythonjsonlogger import jsonlogger
 from .models.user import User
 from flask_bcrypt import Bcrypt
 from prometheus_flask_exporter import PrometheusMetrics
+from flask_mail import Mail
+from flask_cors import CORS
+
 load_dotenv()
 
 # Flask
@@ -21,11 +25,26 @@ POSTGRES_USER = os.environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 PG_PORT = os.environ.get('PG_PORT', 5432)
 
+# Mail
+MAIL_SERVER = os.environ.get('MAIL_SERVER')
+MAIL_PORT = os.environ.get('MAIL_PORT')
+MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+MAIL_SENDER_NAME = os.environ.get('MAIL_SENDER_NAME')
+
+# APP
+PROD_APP_URL = os.environ.get('PROD_APP_URL')
+
 # Flask config
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
 
-# Configure logger
+# Oauth config
+oauth = OAuth()
+oauth.init_app(app)
+
+# Logger config
 logger = logging.getLogger(APP_NAME)
 logger.setLevel(logging.INFO)
 log_handler = TimedRotatingFileHandler("./app/logs/app.log", when="midnight", interval=1, backupCount=30)
@@ -34,23 +53,47 @@ log_handler.setFormatter(formatter)
 logger.addHandler(log_handler)
 logger.propagate = True
 
+# CORS config
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://127.0.0.1:8080", "http://localhost:8080", "http://127.0.0.1", os.environ.get('PROD_APP_URL')],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
+
 # Bcrypt config
 bcrypt_app = Bcrypt(app)
 
 # Prometheus metrics config
-logger.info('Initializing Prometheus metrics')
 metrics = PrometheusMetrics(app)
 metrics.info('app', 'Application info', version='1.0.3')
+metrics.register_default(
+    metrics.counter(
+        'by_path_counter', 'Request count by request paths',
+        labels={'path': lambda: request.path}
+    )
+)
 
 # Postgres URI config
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{PG_HOST}:{PG_PORT}/{POSTGRES_DB}"
 
 # Database initialization
-logger.info('Initializing database')
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
+# Email config
+app.config['MAIL_SERVER'] = MAIL_SERVER
+app.config['MAIL_PORT'] = MAIL_PORT
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
+app.config['MAIL_DEFAULT_SENDER'] = (MAIL_SENDER_NAME, MAIL_DEFAULT_SENDER)
+app.config['MAIL_SUPPRESS_SEND'] = False
+app.config['MAIL_ASCII_ATTACHMENTS'] = False
+mail = Mail(app)
+
 # Import routes
-logger.info('Importing routes')
 from app import routes

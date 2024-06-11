@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{ app_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 50px;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .header {
+            color: #ffffff;
+            padding-top: 20px;
+            text-align: left;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .logo {
+            max-width: 24%;
+            height: auto;
+        }
+
+        .content {
+            padding: 30px 0;
+            text-align: left;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 8px 15px;
+            font-size: 18px;
+            text-align: center;
+            background: linear-gradient(120deg, #9b51e0, #0693E3);
+            background-size: 125% 170%;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 40px;
+            margin-top: 15px;
+        }
+
+        .button:hover {
+            background-color: #0095fb;
+        }
+
+        a {
+            color: #0095fbb8;
+            text-decoration: none;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .link a{
+            color: #444;
+            font-size: 12px;
+        }
+        .help-wrap {
+            padding: 0px 30px;
+            background-color: #fff3e680;
+            border: 1px solid #2d2e2e;
+            border-radius: 5px;
+            font-family: Inter,Arial,sans-serif;
+            font-weight: 400;
+            color: #2d2e2e;
+            font-size: 14px;
+            line-height: 20px;
+            text-align: left;
+        }
+        .help-wrap p{
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="{{ logo }}" alt="{{ app_name }} Logo">
+        </div>
+
+        <div class="content">
+            <p>Hi {{ user_name }},</p>
+
+            <p>Thanks for creating an {{ app_name }} account. We're over the moon to welcome you aboard, Your account has been activated and you’re ready to go.</p>
+
+            <h1>What's next?</h1>
+            <ul>
+                <li>Logging into the {{ app_name }} with a click below.</li>
+                <!-- <li></li>
+                <li></li> -->
+            </ul>
+
+            <a class="button" href="{{ app_link }}" style="color: #fff; text-decoration: none;">Log in</a>
+
+            <div class="help-wrap">
+                <p>
+                Need help? If you have any questions or need assistance with getting started, please contact our support team or reply to this email. We're always here to help!
+                <a href="mailto:{{ support_email }}">{{ support_email }}</a>
+                </p>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p>Best regards,<br>{{ app_name }}</p>
+        </div>
+    </div>
+</body>
+</html>

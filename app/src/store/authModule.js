@@ -36,7 +36,7 @@ const actions = {
     }
 
     try {
-      const response = await axios.get('/user', {
+      const response = await axios.get('/api/v1/user', {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
         },

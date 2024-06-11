@@ -1,11 +1,11 @@
-FROM node:14 as build-stage
+FROM node:22 as build-stage
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY ./app/package*.json ./
 RUN npm ci
 
-COPY . .
+COPY ./app .
 RUN npm run build
 
 
@@ -14,7 +14,7 @@ FROM node:14 as production-stage
 WORKDIR /app
 
 COPY --from=build-stage /app/dist /app/dist
-COPY server.js .
+COPY ./app/server.js .
 RUN npm install express
 
 EXPOSE 8080

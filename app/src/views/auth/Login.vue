@@ -37,8 +37,6 @@
   import logo from '@/assets/logo/logo.png';
   
   export default {
-    name: 'HomeView',
-  
     data() {
       return {
         logo: logo,
@@ -54,13 +52,11 @@
     });
     },
     methods: {
-    resedEmail() {
-      this.$router.push({ name: 'resend' });
-    },
+      resedEmail() {
+        this.$router.push({ name: 'resend' });
+      },
       async submitForm() {
         this.error = '';
-  
-        // Validation checks
         if (this.email.length < 4) {
           this.error = 'Invalid email address.';
           return;
@@ -72,7 +68,7 @@
         }
   
         try {
-          const response = await axios.post('/login', { email: this.email, password: this.password });
+          const response = await axios.post('/api/v1/login', { email: this.email, password: this.password });
           if (response.status === 200) {
             if (response.data.access_token) {
               localStorage.setItem('access_token', response.data.access_token);

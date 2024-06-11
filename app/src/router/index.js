@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import store from '../store';
 import MainView from '../views/main/MainView.vue'
 import AuthView from '../views/auth/AuthView.vue'
 import HandleAuth from '../views/auth/HandleAuth.vue'
