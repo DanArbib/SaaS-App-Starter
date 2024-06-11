@@ -303,61 +303,50 @@ def create_checkout_session(user):
         credits = request.json.get('credits')
         product_id = request.json.get('productId')
         checkout_session = stripe.checkout.Session.create(
-            line_items=[
-                {
-                    'price': product_id,
-                    'quantity': 1,
-                },
-            ],
+            line_items=[{
+                        'price': product_id,
+                        'quantity': 1,
+                        },],
             mode='payment',
             success_url=os.getenv('PROD_APP_PAYMENT_COMPLETE_URL'),
             cancel_url=os.getenv('PROD_APP_PAYMENT_FAILD_URL'),
-            metadata={'user_id': user.id, 'credits': credits},
-        )
-
+            metadata={'user_id': user.id, 'credits': credits})
         return jsonify({'checkout_session_url': checkout_session.url}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Failed to create payment session: {str(e)}", exc_info=True)
+        return jsonify({'status': 'error', 'message': 'Failed to create payment session'}), 500
 
 
 @app.route('/stripe-callaback', methods=['POST']) # Stripe event callback
 def webhook():
-
-    endpoint_secret = os.getenv('STRIPE_ENDPOINT_SECRET', os.getenv('STRIPE_TESTING_KEY'))
-
-    payload = request.data
-    sig_header = request.headers['STRIPE_SIGNATURE']
-
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
-    except ValueError as e:
-        logger.info(f"Invalid payload. {e}")
-        raise e
-    except stripe.error.SignatureVerificationError as e:
-        logger.info(f"Invalid signature. {e}")
-        raise e
-
-    if event['type'] == 'checkout.session.completed':
-
-        user_id = event['data']['object']['metadata']['user_id']
-        credits = event['data']['object']['metadata']['credits']
-        logger.info(f"Checkout session completed. {user_id} - {credits}")
-
-        # Update user credits
-        user = User.query.filter_by(id=user_id).first()
-        if user:
-            user.credits += int(credits)
-            user.subscription = UserType.SUBSCRIPTION
-            db.session.commit()
-            user_name = email.split('@')[0]
-            Thread(target=payment_complete_email, args=(user.email, user_name, credits)).start()
-
-            return jsonify({'Credit update': True, 'message': 'Credits updated successfully'})
-
-        logger.warning(f"Issue with finding user to complete checkout {event['data']} .")
-        return jsonify({'error': 'User was not found'}), 500
-
-    logger.warning(f"Error processing Stripe event .")
-    return jsonify({'error': ''}), 500
+        endpoint_secret = os.getenv('STRIPE_ENDPOINT_SECRET', os.getenv('STRIPE_TESTING_KEY'))
+        payload = request.data
+        sig_header = request.headers['STRIPE_SIGNATURE']
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret
+            )
+        except ValueError as e:
+            logger.info(f"Invalid payload. {e}")
+            raise e
+        except stripe.error.SignatureVerificationError as e:
+            logger.info(f"Invalid signature. {e}")
+            raise e
+        if event['type'] == 'checkout.session.completed':
+            user_id = event['data']['object']['metadata']['user_id']
+            credits = event['data']['object']['metadata']['credits']
+            logger.info(f"Checkout session completed. {user_id} - {credits}")
+            user = User.query.filter_by(id=user_id).first()
+            if user:
+                user.credits += int(credits)
+                user.subscription = UserType.SUBSCRIPTION
+                db.session.commit()
+                user_name = email.split('@')[0]
+                Thread(target=payment_complete_email, args=(user.email, user_name, credits)).start()
+                return jsonify({'Credit update': True, 'message': 'Credits updated successfully'})
+            logger.warning(f"Issue with finding user to complete checkout {event['data']} .")
+            return jsonify({'error': 'User was not found'}), 500
+    except Exception as e:
+        logger.error(f"Failed to process stripe payment event: {str(e)}", exc_info=True)
+        return jsonify({'status': 'error', 'message': 'Failed to process stripe payment event'}), 500
