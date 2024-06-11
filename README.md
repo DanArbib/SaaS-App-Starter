@@ -27,7 +27,7 @@ This project utilizes Docker for containerized deployment.
 ### Clone the repository:
 
 ```bash
-git clone https://github.com/DanArbib/Application-Base.git
+git clone https://github.com/DanArbib/SaaS-Application-Base.git
 ```
 
 ### Configure environment variables:

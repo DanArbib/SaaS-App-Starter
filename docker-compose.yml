@@ -102,6 +102,7 @@ services:
       - ./.env
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/grafana-dashboard.json
     volumes:
     - grafana_data:/var/lib/grafana
     - ./config/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/default.yaml
