@@ -20,6 +20,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    ports:
+      - "5432:5432"
 
   # Api  
   api:
@@ -41,35 +43,39 @@ services:
       - db-net
       - monitor-net
     restart: always
-
-  # App  
-  app:
-    hostname: app
-    build:
-      context: .
-      dockerfile: ./app/Dockerfile.app
-    depends_on:
-      - api
-    env_file:
-      - ./.env
-    networks:
-      - app-net
-    restart: always
-      
-  # Nginx  
-  nginx:
-    hostname: nginx
-    image: nginx:1.24
-    volumes:
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "80:80"
-    depends_on:
-      - app
-    networks:
-      - app-net
-      - grafana-net
-    restart: always
+      - "5000:5000"
+
+  # # App  
+  # app:
+  #   hostname: app
+  #   build:
+  #     context: .
+  #     dockerfile: ./app/Dockerfile.app
+  #   depends_on:
+  #     - api
+  #   env_file:
+  #     - ./.env
+  #   networks:
+  #     - app-net
+  #   restart: always
+  #   ports:
+  #     - "8080:8080"
+      
+  # # Nginx  
+  # nginx:
+  #   hostname: nginx
+  #   image: nginx:1.24
+  #   volumes:
+  #     - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - app
+  #   networks:
+  #     - app-net
+  #     - grafana-net
+  #   restart: always
 
   # Promtail  
   promtail:
@@ -157,6 +163,9 @@ services:
         rabbitmq-plugins enable rabbitmq_management;
         rabbitmq-server
       '
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   postgress_db:

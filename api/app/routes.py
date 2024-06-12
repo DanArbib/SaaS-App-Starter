@@ -21,7 +21,6 @@ def email():
     try:
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
-        print(user.id, email)
         if user:
             logger.info(f"Existing user was navigated to login page - {email}")
             return jsonify({'is_user': True}), 200
@@ -41,7 +40,7 @@ def signup_api():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             if existing_user.email_is_verify:
-                logger.info(f"Signup attempts for existing use - {email}")
+                logger.info(f"Signup attempt for existing user - {email}")
                 return jsonify({'status': 'error', 'message': f'User with email {email} already exists.'}), 400
             else:
                 db.session.delete(existing_user)
@@ -66,7 +65,7 @@ def signup_api():
         logger.info(f"New user was added successfully - {email}")
         return jsonify({'status': 'success', 'message': 'New user saved successfully'}), 200
     except Exception as e:
-        logger.error(f"Failed to add new user with email - {email} - {e}")
+        logger.error(f"Failed to add new user - {email} - {e}")
         return jsonify({'status': 'error', 'message': f'Issue with adding a new user - {e}'}), 500
     
 
@@ -77,6 +76,9 @@ def login_api():
         password = request.json.get('password')
         user = User.query.filter_by(email=email).first()
         if user:
+            if not user.email_is_verify:
+                logger.info(f"Unverified user attemet to logged in - {email}")
+                return jsonify({'status': 'error', 'message': 'User is not verified'}), 403
             if bcrypt_app.check_password_hash(user.password, password):
                 data = {
                     'user_id': user.id,
@@ -247,7 +249,7 @@ def google_auth():
 def user(user):
     try:
         data = {
-            'email': user.email.split('@')[0],
+            'user': user.email.split('@')[0],
             'credits': user.credits,
             'subscription': user.subscription.value,
             'join_date': user.joined_date_formatted()
