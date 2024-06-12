@@ -8,7 +8,7 @@ import EmailSent from '../views/auth/EmailSent.vue'
 import ResetSent from '../views/auth/ResetSent.vue'
 import ResetPassword from '../views/auth/ResetPassword.vue'
 import Signup from '../views/auth/Signup.vue'
-import ResendEmail from '../views/auth/ResendEmail.vue'
+import ResetPasswordRequest from '../views/auth/ResetPasswordRequest.vue'
 
 const routes = [
   {
@@ -53,9 +53,9 @@ const routes = [
     component: ResetPassword,
   },
   {
-    path: '/resend',
-    name: 'resend',
-    component: ResendEmail,
+    path: '/reset-request',
+    name: 'resetRequest',
+    component: ResetPasswordRequest,
   },
   {
     path: '/logout',

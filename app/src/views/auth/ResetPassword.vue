@@ -65,7 +65,7 @@
         }
 
         this.is_sending = true
-        axios.post('/reset-password', { password: this.password, token: this.$route.query.token })
+        axios.post('/api/v1/reset-password', { password: this.password, token: this.$route.query.t })
         .then(response => {
             const status = response.data.status;
 

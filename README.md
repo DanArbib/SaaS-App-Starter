@@ -3,7 +3,7 @@
 This repository provides a base for building a SaaS application with the following technologies:
 
 - **Frontend**: Vue.js
-- **Backend**: Flask
+- **Backend**: Python Flask
 - **Database**: Postgres
 - **Web Server**: Nginx
 - **Message Queues**: RabbitMQ & Redis

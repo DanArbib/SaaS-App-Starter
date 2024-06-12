@@ -51,7 +51,7 @@
         }
   
         try {
-          const response = await axios.post('/resend', { email: this.email });
+          const response = await axios.post('/api/v1/reset-password-email', { email: this.email });
           if (response.status === 200) {
             this.$router.push({ name: 'reset' });
           } 

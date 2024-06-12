@@ -24,7 +24,7 @@ class User(db.Model):
     
     # Joined date formatted
     def joined_date_formatted(self):
-        return self.user_joined_date.strftime('%Y-%m-%d')
+        return self.joined_date.strftime('%Y-%m-%d')
     
     # UserApiKeys
     api_keys = db.relationship('UserApiKeys', backref='user', lazy=True, cascade="all, delete-orphan")

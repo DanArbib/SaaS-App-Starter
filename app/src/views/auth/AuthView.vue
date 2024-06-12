@@ -57,7 +57,7 @@
       this.is_sending = true
       axios.post('/api/v1/email', { email: this.email })
         .then(response => {
-          if (response.data.userFound) {
+          if (response.data.is_user) {
             this.$router.push({ name: 'login', params: { email: this.email } });
           } else {
             this.$router.push({ name: 'signup', params: { email: this.email } });

@@ -53,7 +53,7 @@
     },
     methods: {
       resedEmail() {
-        this.$router.push({ name: 'resend' });
+        this.$router.push({ name: 'resetRequest' });
       },
       async submitForm() {
         this.error = '';

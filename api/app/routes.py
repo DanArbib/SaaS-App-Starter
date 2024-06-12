@@ -3,7 +3,7 @@ from authlib.common.security import generate_token
 from app import app, db, logger, bcrypt_app, oauth, stripe
 from app.models.user import User, UserApiKeys, UserType
 from app.utils.decorators import validate_jwt
-from app.utils.emails import confirmation_email, welcome_email, password_change_email, payment_complete_email
+from app.utils.emails import confirmation_email, welcome_email, reset_password_email, password_change_email, payment_complete_email
 from datetime import datetime, timedelta, timezone
 from threading import Thread
 import secrets
@@ -21,11 +21,15 @@ def email():
     try:
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
+        print(user.id, email)
         if user:
-            return jsonify({'is_user': True})
+            logger.info(f"Existing user was navigated to login page - {email}")
+            return jsonify({'is_user': True}), 200
         else:
-            return jsonify({'is_user': False})
+            logger.info(f"New user was navigated to login page - {email}")
+            return jsonify({'is_user': False}), 200
     except Exception as e:
+        logger.error(f"Issue with checking user email {email}: {e}")
         return jsonify({'status': 'error', 'message': f'Issue with checking user email {e}'}), 500
 
 
@@ -37,12 +41,12 @@ def signup_api():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             if existing_user.email_is_verify:
-                logger.info(f"User with email - {email} tried to sign but already exists")
-                return jsonify({'status': 'error', 'message': 'User already exists.'}), 400
+                logger.info(f"Signup attempts for existing use - {email}")
+                return jsonify({'status': 'error', 'message': f'User with email {email} already exists.'}), 400
             else:
                 db.session.delete(existing_user)
                 db.session.commit()
-                logger.info(f"No verified email was removed - {email}")
+                logger.info(f"User with unverified email was removed - {email}")
         hashed_password = bcrypt_app.generate_password_hash(password).decode('utf-8')
         uid = str(uuid.uuid4())
         expiration_time = datetime.utcnow() + timedelta(days=1)
@@ -56,13 +60,13 @@ def signup_api():
         new_user.api_keys.append(new_key)
         db.session.add(new_user)
         db.session.commit()
-        verification_link = f"{os.environ.get('PROTOCOL')}://{request.host}/api/v1/verify-email/{confirmation_token}"
+        verification_link = f"{os.environ.get('API_PROTOCOL')}://{request.host}/api/v1/verify-email/{confirmation_token}"
         user_name = email.split('@')[0]
         Thread(target=confirmation_email, args=(email, user_name, verification_link)).start()
-        logger.info(f"New user with email - {email} saved successfully")
+        logger.info(f"New user was added successfully - {email}")
         return jsonify({'status': 'success', 'message': 'New user saved successfully'}), 200
     except Exception as e:
-        logger.error(f"Failed to add new user with email - {email} to the database - {e}")
+        logger.error(f"Failed to add new user with email - {email} - {e}")
         return jsonify({'status': 'error', 'message': f'Issue with adding a new user - {e}'}), 500
     
 
@@ -78,9 +82,9 @@ def login_api():
                     'user_id': user.id,
                 }
                 access_token = jwt.encode(data, os.environ.get('JWT_SECRET_KEY'), algorithm='HS256')
-                logger.info(f"User with email - {email} logged in successfully")
+                logger.info(f"User logged in successfully - {email}")
                 return jsonify({'access_token': access_token}), 200
-        logger.error(f"User with email - {email} tried to login")    
+        logger.warning(f"Failed login attempt - {email}")    
         return jsonify({'status': "Wrong email or password."}), 400
     except Exception as e:
         logger.error(f"Failed to login user: {str(e)}", exc_info=True)
@@ -93,6 +97,7 @@ def confirm_email(token):
         data = jwt.decode(token, os.environ.get('JWT_SECRET_KEY'), algorithms=['HS256'])
         exp_datetime = datetime.fromtimestamp(data.get('exp', None), tz=timezone.utc)
         if exp_datetime < datetime.now(timezone.utc):
+            logger.info(f"Expired token used for email verification")
             return redirect(os.environ.get('PROD_APP_RESET_PASSWORD_URL'))
         user = User.query.filter_by(uid=data['uid']).first()
         if user and token == user.confirmation_token:
@@ -102,7 +107,9 @@ def confirm_email(token):
             email = str(user.email)
             user_name = email.split('@')[0]
             Thread(target=welcome_email, args=(email, user_name)).start()
+            logger.info(f"User email verified successfully - {email}")
             return redirect(os.environ.get('PROD_APP_LOGIN_URL'))
+        logger.warning(f"Failed email verification attempt: User not found or token mismatch.")
         return redirect(os.environ.get('PROD_APP_LOGIN_URL'))
     except Exception as e:
         logger.error(f"Failed to verify user email: {str(e)}", exc_info=True)
@@ -110,7 +117,7 @@ def confirm_email(token):
 
 
 
-@app.route("/api/v1/resend-verification", methods=['POST']) # Resend verification email
+@app.route("/api/v1/reset-password-email", methods=['POST']) # Reset password
 def resend_email():
     try:
         email = request.json.get('email')
@@ -126,12 +133,14 @@ def resend_email():
             confirmation_token = jwt.encode(data, os.environ.get('JWT_SECRET_KEY'), algorithm='HS256')
             existing_user.confirmation_token = confirmation_token
             db.session.commit()
-            verification_link = f"{os.environ.get('PROTOCOL')}://{request.host}/api/v1/verify-email/{confirmation_token}"
+            reset_token = f"{os.environ.get('PROD_APP_RESET_PASSWORD_WITH_TOKEN_URL')}?t={confirmation_token}"
             user_name = email.split('@')[0]
-            thread = Thread(target=confirmation_email, args=(email, user_name, verification_link))
+            thread = Thread(target=reset_password_email, args=(email, user_name, reset_token))
             thread.start()
-            return jsonify({'status': 'Signed up successfully, confirmation email was sent.'}), 200
+            logger.info(f"Reset password email was sent successfully - {email}")
+            return jsonify({'status': 'success', 'message': "Reset password email was sent successfully"}), 200
         else:
+            logger.warning(f"Attempted to reset password to non-existing user: {email}.")
             return jsonify({'status': 'error', f"User with email {email} not exists": ""}), 400
     except Exception as e:
         logger.error(f"Failed to resend verification: {str(e)}", exc_info=True)
@@ -147,21 +156,24 @@ def reset_password():
         exp_timestamp = data.get('exp', None)
         exp_datetime = datetime.fromtimestamp(exp_timestamp, tz=timezone.utc)
         if exp_datetime < datetime.now(timezone.utc):
+            logger.info(f"Expired token used for reset password")
             return redirect(os.environ.get('PROD_APP_RESET_PASSWORD_URL'))
         user = User.query.filter_by(uid=data['uid']).first()
         if not user:
+            logger.warning(f"User not found for uid: {data['uid']}.")
             return jsonify({'status': "User not found."}), 400
         if user and token == user.confirmation_token:
             hashed_password = bcrypt_app.generate_password_hash(password).decode('utf-8')
             user.password = hashed_password
             db.session.commit()
-            change_password_url = os.environ.get('PROD_APP_RESET_PASSWORD_URL')
             email = str(user.email)
             user_name = email.split('@')[0]
-            thread = Thread(target=password_change_email, args=(email, user_name, change_password_url))
+            thread = Thread(target=password_change_email, args=(email, user_name))
             thread.start()
+            logger.info(f"Password changed successfully - {email}.")
             return jsonify({'status': 'Password changed successfully..'}), 200
         else:
+            logger.warning(f"Invalid confirmation token {user.email}.")
             return jsonify({'status': "Non valid confirmation token."}), 400
     except Exception as e:
         logger.error(f"Failed to reset user password: {str(e)}", exc_info=True)
@@ -177,6 +189,7 @@ def google():
     try:
         nonce = generate_token()
         session['nonce'] = generate_token()
+        logger.info("Initiating Google authentication process.")
         return oauth.google.authorize_redirect(url_for('google_auth', _external=True), nonce=nonce)
     except Exception as e:
         logger.error(f"Failed to redirect to google auth {str(e)}", exc_info=True)
@@ -194,7 +207,6 @@ def google_auth():
 
         user = User.query.filter_by(email=email).first()
         if not user:
-            logger.info(f"new user: {email}")
             uid = str(uuid.uuid4())
             hashed_password = bcrypt_app.generate_password_hash(uid).decode('utf-8')
             new_user = User(email=email, password=hashed_password, uid=uid, given_name=given_name, family_name=family_name)
@@ -210,9 +222,11 @@ def google_auth():
             user_name = email.split('@')[0]
             Thread(target=welcome_email, args=(email, user_name)).start()
 
+            logger.info(f"New user added successfully with Google auth - {email}")
+
         else:
             user_id = user.id
-            logger.info(f"Existing user: {user_id}")
+            logger.info(f"User logged in successfully with Google auth - {email}")
         data = {
             'user_id': user_id,
         }
@@ -222,6 +236,7 @@ def google_auth():
     except Exception as e:
         logger.error(f"Failed to get google auth callaback {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to get google auth callaback'}), 500
+
 
 ##############################################################################
 ################################## USER DATA #################################
@@ -234,9 +249,10 @@ def user(user):
         data = {
             'email': user.email.split('@')[0],
             'credits': user.credits,
-            'subscription': user.subscription,
+            'subscription': user.subscription.value,
             'join_date': user.joined_date_formatted()
         }
+        logger.info(f"User data retrieved successfully for user: {user.email}")
         return jsonify(data)
     except Exception as e:
         logger.error(f"Failed to retrieve user data: {str(e)}", exc_info=True)
@@ -268,9 +284,11 @@ def generate_api_key(user):
             new_key = UserApiKeys(user=user, key=new_key_value)
             db.session.add(new_key)
             db.session.commit()
+            logger.info(f"New API key generated successfully - {user.email}")
             return jsonify({'status': 'success', "New key was generated": ""}), 200
         else:
-            return jsonify({'status': 'error', "Couldn't find the api key": ""}), 400
+            logger.error(f"Couldn't find API key to generate a new one - {user.email}")
+            return jsonify({'status': 'error', "message": "Couldn't find the api key"}), 400
     except Exception as e:
         logger.error(f"Failed to generate api key: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to generate api key'}), 500
@@ -284,9 +302,10 @@ def delete_api_key(user):
         if user_key:
             db.session.delete(user_key)
             db.session.commit()
-            return jsonify({'status': 'success', "New key was generated": ""}), 200
+            logger.info(f"API key deleted successfully - {user.email}")
+            return jsonify({'status': 'success', "message": "New key was generated"}), 200
         else:
-            return jsonify({'status': 'error', "Couldn't find the api key": ""}), 400
+            return jsonify({'status': 'error', "message": "Couldn't find the api key"}), 400
     except Exception as e:
         logger.error(f"Failed to delete api key: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to delete api key'}), 500
@@ -311,6 +330,7 @@ def create_checkout_session(user):
             success_url=os.getenv('PROD_APP_PAYMENT_COMPLETE_URL'),
             cancel_url=os.getenv('PROD_APP_PAYMENT_FAILD_URL'),
             metadata={'user_id': user.id, 'credits': credits})
+        logger.info(f"Payment session created successfully - {user.email}")
         return jsonify({'checkout_session_url': checkout_session.url}), 200
     except Exception as e:
         logger.error(f"Failed to create payment session: {str(e)}", exc_info=True)
@@ -344,6 +364,7 @@ def webhook():
                 db.session.commit()
                 user_name = email.split('@')[0]
                 Thread(target=payment_complete_email, args=(user.email, user_name, credits)).start()
+                logger.info(f"Checkout session completed, Credit was added to user - {user.email}")
                 return jsonify({'Credit update': True, 'message': 'Credits updated successfully'})
             logger.warning(f"Issue with finding user to complete checkout {event['data']} .")
             return jsonify({'error': 'User was not found'}), 500
