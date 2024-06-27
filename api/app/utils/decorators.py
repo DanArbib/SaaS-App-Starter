@@ -3,7 +3,9 @@ from flask import jsonify, request
 from app.models.user import User
 from app import metrics, logger
 import jwt, os
-import time
+from prometheus_client import Counter
+
+user_access_counter = Counter('user_access', 'Count of user accesses', ['user'])
 
 def validate_jwt(f):
     @wraps(f)
@@ -27,6 +29,10 @@ def validate_jwt(f):
 
             if not user:
                 raise RuntimeError('User not found')
+            
+            logger.info(f"User {user.email} is accessing {request.path}")
+            user_access_counter.labels(user=user.email).inc()
+
             return f(user, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             return jsonify(expired_msg), 401

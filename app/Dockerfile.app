@@ -1,4 +1,4 @@
-FROM node:22 as build-stage
+FROM node:22-alpine as build-stage
 
 WORKDIR /app
 
@@ -8,15 +8,10 @@ RUN npm ci
 COPY ./app .
 RUN npm run build
 
+FROM nginx:stable-alpine3.19 as production-stage
 
-FROM node:14 as production-stage
+COPY --from=build-stage /app/dist  /usr/share/nginx/html
 
-WORKDIR /app
+EXPOSE 80
 
-COPY --from=build-stage /app/dist /app/dist
-COPY ./app/server.js .
-RUN npm install express
-
-EXPOSE 8080
-
-CMD ["node", "server.js"]
+CMD ["nginx", "-g", "daemon off;"]

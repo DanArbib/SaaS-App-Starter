@@ -2,10 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import axios from 'axios';
 import './assets/style.css';
-
-axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;
+import './index.css'
+// import '../node_modules/flowbite-vue/dist/index.css'
 
 const app = createApp(App);
 app.use(store);

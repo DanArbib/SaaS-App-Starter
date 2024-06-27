@@ -26,9 +26,9 @@
     outline: none;
   }
   
-  img:focus {
-    outline: none;
-  }
+img:focus {
+  outline: none;
+}
 
 h1 {
     display: block;
@@ -40,33 +40,33 @@ h1 {
     font-weight: 600;
   }
 
-  .main-content {
-    flex-grow: 1;
-    margin-top: 65px;
-    margin-bottom: 70px;
-  }
+.main-content {
+  flex-grow: 1;
+  margin-top: 65px;
+  margin-bottom: 70px;
+}
 
-  .btn {
-    border-style: solid;
-    border-top-width: 0px;
-    border-right-width: 0px;
-    border-left-width: 0px;
-    border-bottom-width: 0px;
-    color: #ffffff;
-    border-color: #19202c;
-    background-color: #231f20;
-    padding-top: 10px;
-    padding-right: 20px;
-    padding-bottom: 10px;
-    padding-left: 20px;
-    font-family: inherit;
-    font-weight: 450;
-    font-size: 14px;
-    line-height: 1em;
-    height: 40px;
-    width: 100%;
-    cursor: pointer;
-    border-radius: 5px;
+.btn {
+  border-style: solid;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  border-left-width: 0px;
+  border-bottom-width: 0px;
+  color: #ffffff;
+  border-color: #19202c;
+  background-color: #231f20;
+  padding-top: 10px;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  font-family: inherit;
+  font-weight: 450;
+  font-size: 14px;
+  line-height: 1em;
+  height: 40px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .btn-auth {
@@ -157,13 +157,13 @@ a {
 }
 
 .spinner-wrap {
-width: 280px;
-height: 280px;
-display: flex;
-justify-content: center;
-align-items: center;
-flex-direction: column;
-gap: 10px;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
 }
 
 

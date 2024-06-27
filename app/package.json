@@ -9,6 +9,8 @@
   "dependencies": {
     "axios": "^1.7.2",
     "core-js": "^3.8.3",
+    "flowbite": "^2.3.0",
+    "flowbite-vue": "^0.1.5",
     "install": "^0.13.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
@@ -19,6 +21,9 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
-    "dotenv-webpack": "^8.0.1"
+    "autoprefixer": "^10.4.19",
+    "dotenv-webpack": "^8.0.1",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4"
   }
 }

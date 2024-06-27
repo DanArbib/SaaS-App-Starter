@@ -59,7 +59,7 @@ def reset_password_email(email, user_name, reset_token):
                                         logo=LOGO_URL, app_name=APP_NAME)
             msg = Message(subject, recipients=[email], html=html_body)
             mail.send(msg)
-            logger.info(f"Reset password email to sent successfully - {email}")
+            logger.info(f"Reset password email sent successfully - {email}")
         except Exception as e:
             logger.error(f'Error sending email: {e}')
 

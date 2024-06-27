@@ -24,7 +24,7 @@ export default {
     authenticateWithGoogle() {
 
       this.loading = true;
-      window.location.href = `${process.env.VUE_APP_API_BASE_URL}/api/v1/google-login/`;
+      window.location.href = `/api/v1/google-login/`;
     }
   }
 };

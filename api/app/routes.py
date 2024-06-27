@@ -77,7 +77,7 @@ def login_api():
         user = User.query.filter_by(email=email).first()
         if user:
             if not user.email_is_verify:
-                logger.info(f"Unverified user attemet to logged in - {email}")
+                logger.info(f"Unverified user attemet to login - {email}")
                 return jsonify({'status': 'error', 'message': 'User is not verified'}), 403
             if bcrypt_app.check_password_hash(user.password, password):
                 data = {
@@ -139,7 +139,6 @@ def resend_email():
             user_name = email.split('@')[0]
             thread = Thread(target=reset_password_email, args=(email, user_name, reset_token))
             thread.start()
-            logger.info(f"Reset password email was sent successfully - {email}")
             return jsonify({'status': 'success', 'message': "Reset password email was sent successfully"}), 200
         else:
             logger.warning(f"Attempted to reset password to non-existing user: {email}.")
