@@ -1,7 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Error from '@/components/Error/ErrorTip.vue'
+</script>
 
 <template>
-  <ErrorTip type="404" />
+  <Error type="404" />
 </template>
 
 <style lang="scss" scoped></style>

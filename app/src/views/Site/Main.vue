@@ -10,9 +10,7 @@ import SiteLayout from '@/layouts/SiteLayout.vue'
     </div>
 
     <div class="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        MAIN PAGE
-        <Button @click="navigateToSignin">Sign in</Button>
-        <ButtonDefault route="/auth" label="Button" customClasses="bg-purple-600 text-white rounded-md" />
+        <ButtonDefault route="/auth" label="Login" customClasses="bg-purple-600 text-white rounded-md" />
     </div>
   </SiteLayout>
 </template>

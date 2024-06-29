@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import DefaultAuthCard from '@/components/Auth/DefaultAuthCard.vue'
@@ -10,8 +10,8 @@ const props = defineProps(['email'])
 
 const alertStore = useAlertStore();
 const router = useRouter();
-const name = ref('');
 const email = ref(props.email)
+const name = ref(email.value ? email.value.split('@')[0] : '');
 const password = ref('');
 const RePassword = ref('');
 const errormsg = ref('');
@@ -29,7 +29,7 @@ const signUpUser = async () => {
   }
 
   if (password.value.length < 8) {
-    errormsg.value = 'Password must be at least 8 characters long.';
+    errormsg.value = 'Password must be at least 6 characters long.';
   return;
   }
 
@@ -68,11 +68,11 @@ const clearError = () => {
 </script>
 
 <template>
-  <AuthLayout @click="clearError">
+  <AuthLayout>
 
-    <DefaultAuthCard subtitle="Start for free" title="Sign Up to TailAdmin">
+    <DefaultAuthCard subtitle="Start for free" title="Sign Up">
         <!-- input -->
-        <div class="mb-4">
+        <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Name</label>
           <div class="relative">
             <input
@@ -111,7 +111,7 @@ const clearError = () => {
         </InputGroup>
 
         <!-- input -->
-        <div class="mb-4">
+        <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Email</label>
           <div class="relative">
             <input
@@ -143,7 +143,7 @@ const clearError = () => {
         <!-- input end -->
 
         <!-- input -->
-        <div class="mb-4">
+        <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Password</label>
           <div class="relative">
             <input
@@ -179,7 +179,7 @@ const clearError = () => {
         <!-- input end -->
 
         <!-- input -->
-        <div class="mb-4">
+        <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Confirm Password</label>
           <div class="relative">
             <input
@@ -220,7 +220,7 @@ const clearError = () => {
           <input
             @click="signUpUser"
             value="Create account"
-            class="text-center w-full w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
+            class="text-center w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
           />
         </div>
 

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { useAuthStore } from '@/store/auth';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -41,7 +42,18 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/Dashboard/Main.vue'),
     meta: {
       title: 'app',
+      requiresAuth: true,
     },
+  },
+  {
+    path: '/logout',
+    name: 'Logout',
+    component: {
+      beforeRouteEnter(to, from, next) {
+        localStorage.removeItem('accessToken');
+        next('/signin');
+      }
+    }
   },
   {
     path: '/403',
@@ -82,6 +94,22 @@ const router = createRouter({
   routes,
   scrollBehavior(to, from, savedPosition) {
     return savedPosition || { left: 0, top: 0 }
+  }
+});
+
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    await authStore.getUserInfo();
+
+    if (!authStore.isUserAuthenticated) {
+      next({ name: 'signin' });
+    } else {
+      next();
+    }
+  } else {
+    next();
   }
 });
 

@@ -33,7 +33,7 @@ const ToGoogleLogin = () => {
 
         <!-- input -->
         <div class="mb-4">
-          <label class="mb-2.5 block font-medium text-black dark:text-white">email</label>
+          <label class="mb-2.5 block font-medium text-black dark:text-white">Email</label>
           <div class="relative">
             <input
               v-model="email"

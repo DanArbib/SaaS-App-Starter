@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store/auth';
 
+const authStore = useAuthStore();
+
+const router = useRouter();
 const target = ref(null)
 const dropdownOpen = ref(false)
 
@@ -18,12 +23,11 @@ onClickOutside(target, () => {
       @click.prevent="dropdownOpen = !dropdownOpen"
     >
       <span class="hidden text-right lg:block">
-        <span class="block text-sm font-medium text-black dark:text-white">Thomas Anree</span>
-        <span class="block text-xs font-medium">UX Designer</span>
+        <span class="block text-sm font-medium text-black dark:text-white">{{ authStore.userData.user }}</span>
       </span>
 
       <span class="h-12 w-12 rounded-full">
-        <img src="@/assets/vue.svg" alt="User" />
+        <img src="@/assets/logo/logo.png" alt="User" />
       </span>
 
       <svg
@@ -122,7 +126,11 @@ onClickOutside(target, () => {
           </router-link>
         </li>
       </ul>
+      
+
+      
       <button
+        @click="router.push('/logout')"
         class="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
       >
         <svg

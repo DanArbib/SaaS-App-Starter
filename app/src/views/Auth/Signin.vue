@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import { useAlertStore } from '@/store/alert';
-import { ref, computed, onMounted } from 'vue';
+import { ref} from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import DefaultAuthCard from '@/components/Auth/DefaultAuthCard.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 
 const props = defineProps(['email'])
-const alertStore = useAlertStore();
-const alertMessage = computed(() => alertStore.alertMessage);
-
-onMounted(() => {
-  if (alertMessage.value) {
-    setTimeout(() => {
-      alertStore.clearAlertMessage();
-    }, 10000); 
-  }
-});
 
 const router = useRouter();
 const email = ref(props.email)
@@ -24,6 +13,13 @@ const password = ref('');
 const errormsg = ref('');
 
 const loginUser = async () => {
+
+  if (password.value.length < 6) {
+    console.log('fdsf');
+    errormsg.value = 'Wrong email or password.';
+  return;
+  }
+
   try {
     const response = await axios.post(`/api/v1/login`, {
       email: email.value,
@@ -32,8 +28,8 @@ const loginUser = async () => {
 
     if (response.status === 200) {
       if (response.data.access_token) {
-        localStorage.setItem('access_token', response.data.access_token);
-        router.push({ name: 'main' });
+        localStorage.setItem('accessToken', response.data.access_token);
+        router.push({ name: 'app' });
       } else {
         errormsg.value = 'Email is not verified.';
       }
@@ -55,17 +51,12 @@ const clearError = () => {
 </script>
 
 <template>
-  <AuthLayout @click="clearError">
+  <AuthLayout>
 
-    <!-- Show alert message if present -->
-    <div v-if="alertMessage" class="alert alert-info">
-      {{ alertMessage }}
-    </div>
-
-    <DefaultAuthCard subtitle="Start for free" title="Sign In to TailAdmin">
+    <DefaultAuthCard subtitle="Start for free" title="Sign In">
 
         <!-- input -->
-        <div class="mb-4">
+        <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Email</label>
           <div class="relative">
             <input
@@ -97,7 +88,7 @@ const clearError = () => {
         <!-- input end -->
 
         <!-- input -->
-        <div class="mb-4">
+        <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Password</label>
           <div class="relative">
             <input

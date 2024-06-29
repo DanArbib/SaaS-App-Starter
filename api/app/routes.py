@@ -55,13 +55,14 @@ def signup_api():
             'exp': int(expiration_time.timestamp()),
         }
         confirmation_token = jwt.encode(data, os.environ.get('JWT_SECRET_KEY'), algorithm='HS256')
-        new_user = User(email=email, password=hashed_password, uid=uid, confirmation_token=confirmation_token)
+        new_user = User(email=email, password=hashed_password, uid=uid, confirmation_token=confirmation_token, given_name=name)
         new_key = UserApiKeys(key=secrets.token_hex(16))
         new_user.api_keys.append(new_key)
         db.session.add(new_user)
         db.session.commit()
         verification_link = f"{os.environ.get('API_PROTOCOL')}://{request.host}/api/v1/verify-email/{confirmation_token}"
         user_name = email.split('@')[0]
+        print(verification_link)
         # Thread(target=confirmation_email, args=(email, user_name, verification_link)).start()
         logger.info(f"New user was added successfully - {email}")
         return jsonify({'status': 'success', 'message': 'New user saved successfully'}), 200
@@ -109,7 +110,7 @@ def confirm_email(token):
             db.session.commit()
             email = str(user.email)
             user_name = email.split('@')[0]
-            Thread(target=welcome_email, args=(email, user_name)).start()
+            # Thread(target=welcome_email, args=(email, user_name)).start()
             logger.info(f"User email verified successfully - {email}")
             return redirect(os.environ.get('PROD_APP_LOGIN_URL'))
         logger.warning(f"Failed email verification attempt: User not found or token mismatch.")
@@ -249,7 +250,7 @@ def google_auth():
 def user(user):
     try:
         data = {
-            'user': user.email.split('@')[0],
+            'user': user.given_name,
             'credits': user.credits,
             'subscription': user.subscription.value,
             'join_date': user.joined_date_formatted()

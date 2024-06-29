@@ -52,7 +52,7 @@ const { isSidebarOpen, toggleSidebar } = useSidebarStore()
         </button>
         <!-- Hamburger Toggle BTN -->
         <router-link class="block flex-shrink-0 lg:hidden" to="/">
-          <img src="@/assets/vue.svg" alt="Logo" />
+          <img src="@/assets/logo/logo.png" alt="Logo" />
         </router-link>
       </div>
       
