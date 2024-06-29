@@ -37,6 +37,7 @@ def signup_api():
     try:
         email = request.json.get('email')
         password = request.json.get('password')
+        name = request.json.get('name')
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             if existing_user.email_is_verify:
@@ -61,7 +62,7 @@ def signup_api():
         db.session.commit()
         verification_link = f"{os.environ.get('API_PROTOCOL')}://{request.host}/api/v1/verify-email/{confirmation_token}"
         user_name = email.split('@')[0]
-        Thread(target=confirmation_email, args=(email, user_name, verification_link)).start()
+        # Thread(target=confirmation_email, args=(email, user_name, verification_link)).start()
         logger.info(f"New user was added successfully - {email}")
         return jsonify({'status': 'success', 'message': 'New user saved successfully'}), 200
     except Exception as e:
@@ -87,7 +88,7 @@ def login_api():
                 logger.info(f"User logged in successfully - {email}")
                 return jsonify({'access_token': access_token}), 200
         logger.warning(f"Failed login attempt - {email}")    
-        return jsonify({'status': "Wrong email or password."}), 400
+        return jsonify({'status': "Wrong email or password."}), 401
     except Exception as e:
         logger.error(f"Failed to login user: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to login user'}), 500

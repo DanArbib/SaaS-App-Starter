@@ -114,11 +114,11 @@ app.config['MAIL_SUPPRESS_SEND'] = False
 app.config['MAIL_ASCII_ATTACHMENTS'] = False
 mail = Mail(app)
 
-# RabbitMQ config
-credentials = pika.PlainCredentials(username=RABBITMQ_DEFAULT_USER, password=RABBITMQ_DEFAULT_PASS)
-rmq_connection = pika.BlockingConnection(
-    pika.ConnectionParameters(heartbeat=10, host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
-rabbitmq = rmq_connection.channel()
+# # RabbitMQ config
+# credentials = pika.PlainCredentials(username=RABBITMQ_DEFAULT_USER, password=RABBITMQ_DEFAULT_PASS)
+# rmq_connection = pika.BlockingConnection(
+#     pika.ConnectionParameters(heartbeat=10, host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials))
+# rabbitmq = rmq_connection.channel()
 
 # Stripe
 stripe.api_key = STRIPE_SECRET_KEY
