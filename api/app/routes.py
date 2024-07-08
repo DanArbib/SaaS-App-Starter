@@ -38,8 +38,10 @@ def signup_api():
         email = request.json.get('email')
         password = request.json.get('password')
         name = request.json.get('name')
+        print(email, password, name)
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
+            print(existing_user.id)
             if existing_user.email_is_verify:
                 logger.info(f"Signup attempt for existing user - {email}")
                 return jsonify({'status': 'error', 'message': f'User with email {email} already exists.'}), 400
@@ -55,8 +57,10 @@ def signup_api():
             'exp': int(expiration_time.timestamp()),
         }
         confirmation_token = jwt.encode(data, os.environ.get('JWT_SECRET_KEY'), algorithm='HS256')
+        print(confirmation_token)
         new_user = User(email=email, password=hashed_password, uid=uid, confirmation_token=confirmation_token, given_name=name)
         new_key = UserApiKeys(key=secrets.token_hex(16))
+
         new_user.api_keys.append(new_key)
         db.session.add(new_user)
         db.session.commit()
@@ -125,6 +129,7 @@ def confirm_email(token):
 def resend_email():
     try:
         email = request.json.get('email')
+        print(email)
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             uid = existing_user.uid
@@ -138,13 +143,13 @@ def resend_email():
             existing_user.confirmation_token = confirmation_token
             db.session.commit()
             reset_token = f"{os.environ.get('PROD_APP_RESET_PASSWORD_WITH_TOKEN_URL')}?t={confirmation_token}"
+            print(reset_token)
             user_name = email.split('@')[0]
-            thread = Thread(target=reset_password_email, args=(email, user_name, reset_token))
-            thread.start()
+            # thread = Thread(target=reset_password_email, args=(email, user_name, reset_token)).start()
             return jsonify({'status': 'success', 'message': "Reset password email was sent successfully"}), 200
         else:
             logger.warning(f"Attempted to reset password to non-existing user: {email}.")
-            return jsonify({'status': 'error', f"User with email {email} not exists": ""}), 400
+            return jsonify({'status': 'error', f"User with email {email} not exists": ""}), 404
     except Exception as e:
         logger.error(f"Failed to resend verification: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to resend verification'}), 500
@@ -171,8 +176,7 @@ def reset_password():
             db.session.commit()
             email = str(user.email)
             user_name = email.split('@')[0]
-            thread = Thread(target=password_change_email, args=(email, user_name))
-            thread.start()
+            # thread = Thread(target=password_change_email, args=(email, user_name)).start()
             logger.info(f"Password changed successfully - {email}.")
             return jsonify({'status': 'Password changed successfully..'}), 200
         else:
@@ -234,7 +238,7 @@ def google_auth():
             'user_id': user_id,
         }
         access_token = jwt.encode(data, os.environ.get('JWT_SECRET_KEY'), algorithm='HS256')
-        redirect_url = f"{os.environ.get('PROD_APP_GOOGLE_REDIRECT')}?access_token={access_token}"
+        redirect_url = f"{os.environ.get('PROD_APP_GOOGLE_REDIRECT')}?t={access_token}"
         return redirect(redirect_url)
     except Exception as e:
         logger.error(f"Failed to get google auth callaback {str(e)}", exc_info=True)
@@ -251,6 +255,9 @@ def user(user):
     try:
         data = {
             'user': user.given_name,
+            'uid': user.uid,
+            'avatar': user.avatar,
+            'img': 'preSignedUrl',
             'credits': user.credits,
             'subscription': user.subscription.value,
             'join_date': user.joined_date_formatted()

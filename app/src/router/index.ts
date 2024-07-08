@@ -37,6 +37,32 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/reset-password-request',
+    name: 'resetPasswordRequest',
+    component: () => import('@/views/Auth/ResetPassRequest.vue'),
+    meta: {
+      title: 'reset-password-request',
+    },
+  },
+  {
+    path: '/reset-password',
+    name: 'resetPassword',
+    component: () => import('@/views/Auth/ResetPass.vue'),
+    props: route => ({ token: route.query.t}),
+    meta: {
+      title: 'reset-password',
+    },
+  },
+  {
+    path: '/handle-auth',
+    name: 'handleAuth',
+    component: () => import('@/views/Auth/handleAuth.vue'),
+    props: route => ({ token: route.query.t}),
+    meta: {
+      title: 'handleAuth',
+    },
+  },
+  {
     path: '/app',
     name: 'app',
     component: () => import('@/views/Dashboard/Main.vue'),
@@ -49,7 +75,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/logout',
     name: 'Logout',
     component: {
-      beforeRouteEnter(to, from, next) {
+      beforeRouteEnter(_, __, next) {
         localStorage.removeItem('accessToken');
         next('/signin');
       }
@@ -93,11 +119,20 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return savedPosition || { left: 0, top: 0 }
-  }
+    if (savedPosition) {
+      return { ...savedPosition, behavior: 'smooth' };
+    } else if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      };
+    } else {
+      return { left: 0, top: 0, behavior: 'smooth' };
+    }
+  },
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, __, next) => {
   const authStore = useAuthStore();
 
   if (to.matched.some(record => record.meta.requiresAuth)) {

@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const props = defineProps(['title', 'message'])
+</script>
+
 <template>
   <div
     class="mb-2 first:flex w-full border-l-6 border-[#34D399] bg-[#34D399] bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-5"
@@ -21,10 +25,10 @@
     </div>
     <div class="w-full">
       <h5 class="text-lg font-bold text-black dark:text-[#34D399]">
-        Almost There! Verify Your Email
+        Almost There!
       </h5>
       <p class="text-base leading-relaxed text-body">
-        We've sent a confirmation email to your inbox. Please click the link to complete your signup.
+        {{ props.message }}
       </p>
     </div>
   </div>

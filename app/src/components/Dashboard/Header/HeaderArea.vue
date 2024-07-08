@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSidebarStore } from '@/store/sidebar'
-import DarkModeSwitcher from './DarkModeSwitcher.vue'
-import DropdownNotification from './DropdownNotification.vue'
+// import DarkModeSwitcher from './DarkModeSwitcher.vue'
+// import DropdownNotification from './DropdownNotification.vue'
 import DropdownUser from './DropdownUser.vue'
 
 const { isSidebarOpen, toggleSidebar } = useSidebarStore()
@@ -52,7 +52,7 @@ const { isSidebarOpen, toggleSidebar } = useSidebarStore()
         </button>
         <!-- Hamburger Toggle BTN -->
         <router-link class="block flex-shrink-0 lg:hidden" to="/">
-          <img src="@/assets/logo/logo.png" alt="Logo" />
+          <img src="@/assets/logo/icon.png" alt="Logo" />
         </router-link>
       </div>
       
@@ -60,16 +60,16 @@ const { isSidebarOpen, toggleSidebar } = useSidebarStore()
 
       </div>
 
-      <div class="flex items-center gap-3 2xsm:gap-7">
-        <ul class="flex items-center gap-2 2xsm:gap-4">
+      <div class="flex items-center gap-3 2xsm:gap-1">
+        <ul class="flex items-center gap-2 2xsm:gap-1">
           <li>
             <!-- Dark Mode Toggler -->
-            <DarkModeSwitcher />
+            <!-- <DarkModeSwitcher /> -->
             <!-- Dark Mode Toggler -->
           </li>
 
           <!-- Notification Menu Area -->
-          <DropdownNotification />
+          <!-- <DropdownNotification /> -->
           <!-- Notification Menu Area -->
 
         </ul>

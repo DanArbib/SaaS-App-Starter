@@ -1,6 +1,7 @@
 from app.extensions import db
 from datetime import datetime
 from enum import Enum as UserEnum
+import random
 
 class UserType(UserEnum):
     FREE_TRAIL = 'Free'
@@ -21,10 +22,15 @@ class User(db.Model):
     subscription = db.Column(db.Enum(UserType), default=UserType.FREE_TRAIL)
     given_name = db.Column(db.String(20), unique=False, nullable=True)
     family_name =db.Column(db.String(20), unique=False, nullable=True)
+    avatar = db.Column(db.String(20), default=random.random(), unique=False)
+    img_key = db.Column(db.String(1000), nullable=True, unique=False)
     
     # Joined date formatted
     def joined_date_formatted(self):
         return self.joined_date.strftime('%Y-%m-%d')
+    
+    def generate_avatar_id():
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     
     # UserApiKeys
     api_keys = db.relationship('UserApiKeys', backref='user', lazy=True, cascade="all, delete-orphan")

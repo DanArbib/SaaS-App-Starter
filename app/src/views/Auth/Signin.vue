@@ -15,7 +15,6 @@ const errormsg = ref('');
 const loginUser = async () => {
 
   if (password.value.length < 6) {
-    console.log('fdsf');
     errormsg.value = 'Wrong email or password.';
   return;
   }
@@ -53,7 +52,7 @@ const clearError = () => {
 <template>
   <AuthLayout>
 
-    <DefaultAuthCard subtitle="Start for free" title="Sign In">
+    <DefaultAuthCard subtitle="" title="Sign In">
 
         <!-- input -->
         <div class="mb-4" @click="clearError">
@@ -174,6 +173,13 @@ const clearError = () => {
         </button>
 
         <div class="mt-6 text-center">
+          <p class="font-medium">
+            Forgot your password?
+            <router-link to="/reset-password-request" class="text-primary">Reset Password</router-link>
+          </p>
+        </div>
+
+        <div class="mt-1 text-center">
           <p class="font-medium">
             Don’t have any account?
             <router-link to="/signup" class="text-primary">Sign up</router-link>

@@ -28,7 +28,7 @@ const signUpUser = async () => {
   return;
   }
 
-  if (password.value.length < 8) {
+  if (password.value.length < 6) {
     errormsg.value = 'Password must be at least 6 characters long.';
   return;
   }
@@ -46,7 +46,7 @@ const signUpUser = async () => {
     });
 
     if (response.status === 200) {
-      alertStore.setAlertMessage('An email was sent to you to verify your email.');
+      alertStore.setAlertMessage("We've sent a confirmation email to your inbox. Please click the link to complete your signup.");
       router.push({ name: 'signin' });
     } else {
       errormsg.value = 'An error occurred while processing your request.';
@@ -70,7 +70,7 @@ const clearError = () => {
 <template>
   <AuthLayout>
 
-    <DefaultAuthCard subtitle="Start for free" title="Sign Up">
+    <DefaultAuthCard subtitle="" title="Sign Up">
         <!-- input -->
         <div class="mb-4" @click="clearError">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Name</label>
