@@ -1,18 +1,17 @@
-# SaaS Application Base with Monitoring & Logging
+# A starter template for building microservices based SaaS applications
 
 This repository provides a base for building a SaaS application with the following technologies:
 
 - **Frontend**: Vue.js
-- **Backend**: Python Flask
+- **Backend**: Python (Flask)
 - **Database**: Postgres
 - **Web Server**: Nginx
 - **Message Queues**: RabbitMQ & Redis
-- **Log Collection**: Promtail & Loki
-- **Monitoring**: Prometheus & Grafana
+- **Monitoring and log Collection**: Promtail & Loki & Prometheus & Grafana
 
 Additional notes:
 
-- **User authentication**: JSON Web Tokens
+- **User authentication**: JWT
 - **Payment integration**: Stripe payment
 
 This project utilizes Docker for containerized deployment.
@@ -27,7 +26,7 @@ This project utilizes Docker for containerized deployment.
 ### Clone the repository:
 
 ```bash
-git clone https://github.com/DanArbib/SaaS-Application-Base.git
+git clone https://github.com/DanArbib/SaaS-App-Starter.git
 ```
 
 ### Configure environment variables:
