@@ -135,7 +135,7 @@ wow.init();
               <p
                 class="mx-auto mb-9 max-w-[600px] text-base font-medium text-white sm:text-lg sm:leading-[1.44]"
               >
-                Vue.js, Tailwind, Python (Flask) and Postgres.
+                Vue.js, TypeScript, Tailwind, Python (Flask) and Postgres.
               </p>
               <ul
                 class="mb-10 flex flex-wrap items-center justify-center gap-5"

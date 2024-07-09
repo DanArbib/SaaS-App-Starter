@@ -6,6 +6,8 @@ COPY ./app/package*.json ./
 RUN npm ci
 
 COPY ./app .
+COPY ./app/types/wow.d.ts ./node_modules/@types/wow.d.ts
+
 RUN npm run build
 
 FROM nginx:stable-alpine3.19 as production-stage

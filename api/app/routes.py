@@ -1,10 +1,11 @@
 from flask import request, jsonify, redirect, url_for, session
 from authlib.common.security import generate_token
-from app import app, db, logger, bcrypt_app, oauth, stripe
+from app import app, db, logger, bcrypt_app, oauth, stripe, socketio
 from app.models.user import User, UserApiKeys, UserType
 from app.utils.decorators import validate_jwt
 from app.utils.emails import confirmation_email, welcome_email, reset_password_email, password_change_email, payment_complete_email
 from datetime import datetime, timedelta, timezone
+from flask_socketio import emit
 from threading import Thread
 import secrets
 import uuid
@@ -273,7 +274,7 @@ def user(user):
 ################################## API KEYS ##################################
 ##############################################################################
 
-@app.route('/api-keys', methods=['GET']) # Get api keys
+@app.route('/api/v1/api-keys', methods=['GET']) # Get api keys
 @validate_jwt
 def api_keys(user):
     try:
@@ -283,7 +284,7 @@ def api_keys(user):
         return jsonify({'status': 'error', 'message': 'Failed to retrieve user api keys'}), 500
 
 
-@app.route('/generate-api-key', methods=['POST']) # Generate api key
+@app.route('/api/v1/generate-api-key', methods=['POST']) # Generate api key
 @validate_jwt
 def generate_api_key(user):
     try:
@@ -304,7 +305,7 @@ def generate_api_key(user):
         return jsonify({'status': 'error', 'message': 'Failed to generate api key'}), 500
 
 
-@app.route('/delete-api-key', methods=['DELETE']) # Delete api key
+@app.route('/api/v1/delete-api-key', methods=['DELETE']) # Delete api key
 @validate_jwt
 def delete_api_key(user):
     try:
@@ -325,7 +326,7 @@ def delete_api_key(user):
 ############################## STRIPE PAYMENT ################################
 ##############################################################################
 
-@app.route('/v1/checkout-session', methods=['POST']) # Stripe checkout session
+@app.route('/api/v1/checkout-session', methods=['POST']) # Stripe checkout session
 @validate_jwt
 def create_checkout_session(user):
     try:
@@ -347,7 +348,7 @@ def create_checkout_session(user):
         return jsonify({'status': 'error', 'message': 'Failed to create payment session'}), 500
 
 
-@app.route('/stripe-callaback', methods=['POST']) # Stripe event callback
+@app.route('/api/v1/stripe-callaback', methods=['POST']) # Stripe event callback
 def webhook():
     try:
         endpoint_secret = os.getenv('STRIPE_ENDPOINT_SECRET', os.getenv('STRIPE_TESTING_KEY'))

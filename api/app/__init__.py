@@ -13,6 +13,7 @@ from flask_bcrypt import Bcrypt
 from prometheus_flask_exporter import PrometheusMetrics
 from flask_mail import Mail
 from flask_cors import CORS
+from flask_socketio import SocketIO
 
 load_dotenv()
 
@@ -127,6 +128,9 @@ stripe.api_key = STRIPE_SECRET_KEY
 db.init_app(app)
 with app.app_context():
     db.create_all()
+
+# SocketIO configuration
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Import routes
 from app import routes
