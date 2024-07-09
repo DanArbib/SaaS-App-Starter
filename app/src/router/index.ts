@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from '@/store/auth';
 
 const routes: Array<RouteRecordRaw> = [
+  // Main site
   {
     path: '/',
     name: 'home',
@@ -62,12 +63,31 @@ const routes: Array<RouteRecordRaw> = [
       title: 'handleAuth',
     },
   },
+  // Application
   {
     path: '/app',
     name: 'app',
     component: () => import('@/views/Dashboard/Main.vue'),
     meta: {
       title: 'app',
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/Dashboard/Profile.vue'),
+    meta: {
+      title: 'profile',
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/views/Dashboard/Settings.vue'),
+    meta: {
+      title: 'profile',
       requiresAuth: true,
     },
   },
@@ -81,6 +101,7 @@ const routes: Array<RouteRecordRaw> = [
       }
     }
   },
+  // Error
   {
     path: '/403',
     name: '403',

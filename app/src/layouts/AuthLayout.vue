@@ -34,6 +34,8 @@ onMounted(() => {
 
 <style scoped>
 .tpl {
-  background: url("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3MweG9tZ3U5bDJ0bHp2ZGs2NzFzcGF1M3I5YmRmOTBsbGZsb2hudiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZEHkGB5qlzjOo7Yxjt/giphy.webp");
+  /* background: url("@/assets/img/bg.webp"); */
+  background-color: rgb(55 88 249 / 1);
+  /* background: linear-gradient(12deg, rgb(155, 81, 224) 0%, rgba(7, 146, 227, 0.58) 100%, rgba(156, 82, 225, 0) 100%); */
 }
 </style>

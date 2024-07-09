@@ -13,7 +13,12 @@ const SubmitEmail = async () => {
     const response = await axios.post('/api/v1/email', { email: email.value });
     console.log(response.data);
     if (response.data.is_user) {
-      router.push({ name: 'signin', query: { email: email.value } });
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+          router.push({ name: 'app' });
+        } else {
+          router.push({ name: 'signin', query: { email: email.value } });
+        }
     } else {
       router.push({ name: 'signup', query: { email: email.value } });
     }

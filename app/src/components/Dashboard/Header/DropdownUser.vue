@@ -55,11 +55,12 @@ if (authStore.userData.avatar) {
   <div class="relative" ref="target">
     <router-link
       class="flex items-center gap-4"
-      to="#"
+      to=""
       @click.prevent="dropdownOpen = !dropdownOpen"
     >
-      <span class="hidden text-right lg:block">
+      <span class="hidden text-left lg:block">
         <span class="block text-sm font-medium text-black dark:text-white">{{ authStore.userData.user }}</span>
+        <span class="block text-xs font-medium">My credit: {{ authStore.userData.credits }}</span>
       </span>
 
       <span class="h-12 w-12 rounded-full">
@@ -102,7 +103,7 @@ if (authStore.userData.avatar) {
         </li>
         <li>
           <router-link
-            to="/pages/settings"
+            to="/settings"
             class="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
           >
             <svg

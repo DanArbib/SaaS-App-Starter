@@ -6,7 +6,7 @@ export default {
   darkMode: 'class',
   theme: {
     fontFamily: {
-      satoshi: ['Satoshi', 'sans-serif']
+      satoshi: ['Inter', 'sans-serif']
     },
     screens: {
       '2xsm': '375px',
@@ -22,20 +22,23 @@ export default {
         black: '#1C2434',
         red: '#FB5454',
         'black-2': '#010101',
+        'bar': 'hsl(0deg 0% 13% / 3%)',
         body: '#64748B',
         bodydark: '#AEB7C0',
-        bodydark1: '#DEE4EE',
-        bodydark2: '#8A99AF',
+        bodydark1: '#8A99AF',
+        bodydark2: '#7e8da3',
         primary: '#3C50E0',
         secondary: '#80CAEE',
         stroke: '#E2E8F0',
         gray: '#EFF4FB',
-        graydark: '#333A48',
+        graydark: '#dce0e8',
+        'sidebarlight': 'rgb(251 251 251)',
         'gray-2': '#F7F9FC',
         'gray-3': '#FAFAFA',
         whiten: '#F1F5F9',
         whiter: '#F5F7FD',
         boxdark: '#24303F',
+        'darkblack': 'hsl(0,0%,13%)',
         'boxdark-2': '#1A222C',
         strokedark: '#2E3A47',
         'form-strokedark': '#3d4d60',

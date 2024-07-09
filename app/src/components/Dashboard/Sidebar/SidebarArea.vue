@@ -43,7 +43,7 @@ const menuGroups = ref([
                   />
                 </svg>`,
         label: 'Dashboard',
-        route: '/home',
+        route: '/app',
       },
       {
         icon: `<svg
@@ -291,7 +291,7 @@ const menuGroups = ref([
 
 <template>
   <aside
-    class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+    class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-sidebarlight duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
     :class="{
       'translate-x-0': sidebarStore.isSidebarOpen,
       '-translate-x-full': !sidebarStore.isSidebarOpen
@@ -329,7 +329,7 @@ const menuGroups = ref([
           <div>
             <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">{{ menuGroup.name }}</h3>
 
-            <ul class="mb-6 flex flex-col gap-1.5">
+            <ul class="mb-6 flex flex-col gap-1.5 ">
               <SidebarItem
                 v-for="(menuItem, index) in menuGroup.menuItems"
                 :item="menuItem"
@@ -344,12 +344,12 @@ const menuGroups = ref([
 
       <!-- Promo Box -->
       <div
-        class="mx-auto mb-10 w-full max-w-60 rounded-sm border border-strokedark bg-boxdark py-6 px-4 text-center shadow-default"
+        class="mx-auto mb-10 w-full max-w-60 rounded-2xl border border-strokedark bg-boxdark py-6 px-4 text-center shadow-default"
       >
-        <h3 class="mb-1 font-semibold text-white">TailAdmin Pro</h3>
-        <p class="mb-4 text-xs">Get All Dashboards and 300+ UI Elements</p>
+        <h3 class="mb-1 font-semibold text-white">Upgrade to Pro</h3>
+        <p class="mb-4 text-xs text-gray">Get All Dashboards and 300+ UI Elements</p>
         <a
-          href="https://tailadmin.com/pricing"
+          href="/#pricing"
           target="_blank"
           rel="nofollow"
           class="flex items-center justify-center rounded-md bg-primary p-2 font-medium text-white hover:bg-opacity-90"
