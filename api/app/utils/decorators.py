@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import jsonify, request
 from app.models.user import User
-from app import metrics, logger
+# from app import metrics, logger
 import jwt, os
 from prometheus_client import Counter
 
@@ -30,7 +30,7 @@ def validate_jwt(f):
             if not user:
                 raise RuntimeError('User not found')
             
-            logger.info(f"User {user.email} is accessing {request.path}")
+            # logger.info(f"User {user.email} is accessing {request.path}")
             user_access_counter.labels(user=user.email).inc()
 
             return f(user, *args, **kwargs)

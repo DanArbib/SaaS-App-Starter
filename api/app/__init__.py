@@ -84,7 +84,7 @@ bcrypt_app = Bcrypt(app)
 # Logger config
 logger = logging.getLogger(APP_NAME)
 logger.setLevel(logging.INFO)
-log_handler = TimedRotatingFileHandler("./app/logs/app.log", when="midnight", interval=1, backupCount=30)
+log_handler = TimedRotatingFileHandler("./app/logs/app.log", when="midnight", interval=1, backupCount=4)
 formatter = jsonlogger.JsonFormatter('%(asctime)s %(name)s %(levelname)s %(message)s')
 log_handler.setFormatter(formatter)
 logger.addHandler(log_handler)

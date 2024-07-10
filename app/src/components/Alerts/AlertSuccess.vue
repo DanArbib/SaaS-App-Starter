@@ -4,7 +4,7 @@ const props = defineProps(['title', 'message'])
 
 <template>
   <div
-    class="mb-2 first:flex w-full border-l-6 border-[#34D399] bg-[#34D399] bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-5"
+    class="rounded-2xl mb-2 first:flex w-full border-l-6 border-[#13da91] bg-sidebarlight  px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-5"
   >
     <div
       class="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#34D399]"
