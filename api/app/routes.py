@@ -192,8 +192,9 @@ def reset_password():
 @validate_jwt
 def reset_password_dashboard(user):
     try:
+        old_password = request.json.get('oldPassword')
         password = request.json.get('password')
-        if bcrypt_app.check_password_hash(user.password, password):
+        if bcrypt_app.check_password_hash(user.password, old_password):
             hashed_password = bcrypt_app.generate_password_hash(password).decode('utf-8')
             user.password = hashed_password
             db.session.commit()
@@ -201,6 +202,7 @@ def reset_password_dashboard(user):
             user_name = email.split('@')[0]
             # thread = Thread(target=password_change_email, args=(email, user_name)).start()
             logger.info(f"Password changed for user - {user.email}")
+            print(old_password, password)
             return jsonify({'status': 'success', "New password was saved": ""}), 200
         else:
             return jsonify({'status': 'error', "message": "Wrong password"}), 400
@@ -295,9 +297,8 @@ def user(user):
 def delete_user(user):
     try:
         if user:
-            # db.session.delete(user)
-            # db.session.commit()
-            
+            db.session.delete(user)
+            db.session.commit()
             logger.info(f"User deleted successfully: {user.email}")
             return jsonify({'status': 'success', 'message': 'User deleted successfully'}), 200
         else:

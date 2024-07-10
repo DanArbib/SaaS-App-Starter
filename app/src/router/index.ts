@@ -92,6 +92,15 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/subscribe',
+    name: 'subscribe',
+    component: () => import('@/views/Dashboard/Subscribe.vue'),
+    meta: {
+      title: 'subscribe',
+      requiresAuth: true,
+    },
+  },
+  {
     path: '/logout',
     name: 'Logout',
     component: {

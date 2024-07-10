@@ -3,9 +3,11 @@ import { useSidebarStore } from '@/store/sidebar'
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
 import SidebarItem from './SidebarItem.vue'
+import { useRouter } from 'vue-router';
+import { Button } from '@/components/ui/button'
 
 const target = ref(null)
-
+const router = useRouter();
 const sidebarStore = useSidebarStore()
 
 onClickOutside(target, () => {
@@ -347,15 +349,14 @@ const menuGroups = ref([
         class="mx-auto mb-10 w-full max-w-60 rounded-2xl border border-strokedark bg-boxdark py-6 px-4 text-center shadow-default"
       >
         <h3 class="mb-1 font-semibold text-white">Upgrade to Pro</h3>
-        <p class="mb-4 text-xs text-gray">Get All Dashboards and 300+ UI Elements</p>
-        <a
-          href="/#pricing"
-          target="_blank"
-          rel="nofollow"
-          class="flex items-center justify-center rounded-md bg-primary p-2 font-medium text-white hover:bg-opacity-90"
-        >
-          Purchase Now
-        </a>
+        <p class="mb-2 text-xs text-gray">Get All Dashboards and 300+ UI Elements</p>
+
+        <Button as-child class="mt-4 text-white w-full text-base p-2 hover:bg-opacity-90">
+          <a @click="router.push({ name: 'subscribe' })">
+            Purchase Now
+          </a>
+        </Button>
+
       </div>
       <!-- Promo Box -->
     </div>
