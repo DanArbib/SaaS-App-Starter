@@ -8,17 +8,18 @@ import AuthLayout from '@/layouts/AuthLayout.vue'
 const router = useRouter();
 const email = ref('');
 
-const SubmitEmail = async () => {
+const SubmitEmail = async (event: Event) => {
+  event.preventDefault();
   try {
     const response = await axios.post('/api/v1/email', { email: email.value });
     console.log(response.data);
     if (response.data.is_user) {
       const accessToken = localStorage.getItem('accessToken');
       if (accessToken) {
-          router.push({ name: 'app' });
-        } else {
-          router.push({ name: 'signin', query: { email: email.value } });
-        }
+        router.push({ name: 'app' });
+      } else {
+        router.push({ name: 'signin', query: { email: email.value } });
+      }
     } else {
       router.push({ name: 'signup', query: { email: email.value } });
     }
@@ -36,6 +37,7 @@ const ToGoogleLogin = () => {
   <AuthLayout>
     <DefaultAuthCard subtitle="Enter your email address in the field below" title="Let's get started">
 
+      <form @submit="SubmitEmail">
         <!-- input -->
         <div class="mb-4">
           <label class="mb-2.5 block font-medium text-black dark:text-white">Email</label>
@@ -70,13 +72,15 @@ const ToGoogleLogin = () => {
 
         <!-- submit button -->
         <div class="mb-5 mt-6 ">
-          <input
-            @click="SubmitEmail"
-            value="Continue"
+          <button
+            type="submit"
             class="text-center w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
-          />
+          >
+            Continue
+          </button>
         </div>
-        <!-- submit button end-->
+        <!-- submit button end -->
+      </form>
 
         <button
           @click="ToGoogleLogin"

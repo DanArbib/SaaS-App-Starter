@@ -188,6 +188,26 @@ def reset_password():
         return jsonify({'status': 'error', 'message': 'Failed to reset user password'}), 500
 
 
+@app.route('/api/v1/reset-password-dashboard', methods=['POST']) # Reset password for setting page
+@validate_jwt
+def reset_password_dashboard(user):
+    try:
+        password = request.json.get('password')
+        if bcrypt_app.check_password_hash(user.password, password):
+            hashed_password = bcrypt_app.generate_password_hash(password).decode('utf-8')
+            user.password = hashed_password
+            db.session.commit()
+            email = str(user.email)
+            user_name = email.split('@')[0]
+            # thread = Thread(target=password_change_email, args=(email, user_name)).start()
+            logger.info(f"Password changed for user - {user.email}")
+            return jsonify({'status': 'success', "New password was saved": ""}), 200
+        else:
+            return jsonify({'status': 'error', "message": "Wrong password"}), 400
+    except Exception as e:
+        logger.error(f"Failed to change user password: {str(e)}", exc_info=True)
+        return jsonify({'status': 'error', 'message': 'Failed to change user password'}), 500
+
 ##############################################################################
 ################################ GOOGLE AUTH #################################
 ##############################################################################
@@ -268,7 +288,24 @@ def user(user):
     except Exception as e:
         logger.error(f"Failed to retrieve user data: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'Failed to retrieve user data'}), 500
+    
 
+@app.route("/api/v1/user", methods=['DELETE'])  # Delete user account
+@validate_jwt
+def delete_user(user):
+    try:
+        if user:
+            # db.session.delete(user)
+            # db.session.commit()
+            
+            logger.info(f"User deleted successfully: {user.email}")
+            return jsonify({'status': 'success', 'message': 'User deleted successfully'}), 200
+        else:
+            logger.warning(f"User not found: {user.email}")
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
+    except Exception as e:
+        logger.error(f"Failed to delete user: {str(e)}", exc_info=True)
+        return jsonify({'status': 'error', 'message': 'Failed to delete user'}), 500
 
 ##############################################################################
 ################################## API KEYS ##################################
@@ -289,6 +326,7 @@ def api_keys(user):
 def generate_api_key(user):
     try:
         user_key = UserApiKeys.query.filter_by(user=user, key=request.json.get('key')).first()
+        print(user_key)
         if user_key:
             db.session.delete(user_key)
             new_key_value = str(secrets.token_hex(16))

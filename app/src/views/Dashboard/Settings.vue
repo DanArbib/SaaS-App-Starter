@@ -7,7 +7,22 @@ import BreadcrumbDefault from '@/components/Breadcrumbs/BreadcrumbDefault.vue'
 import { Button } from '@/components/ui/button'
 import DarkModeSwitcher from '@/components/Dashboard/Header/DarkModeSwitcher.vue'
 import { useAuthStore } from '@/store/auth';
+import { useRouter } from 'vue-router';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+
+
+const router = useRouter();
 const authStore = useAuthStore();
 const pageTitle = ref('Account Settings');
 const apiKey = ref<string | null>(null);
@@ -32,6 +47,34 @@ const fetchApiKey = async () => {
   }
 };
 
+const generateNewApiKey = async () => {
+  try {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      throw new Error('No access token found');
+    }
+    
+    const currentKey = apiKey.value; // Get the current API key
+    if (!currentKey) {
+      throw new Error('No current API key found');
+    }
+    
+    // Send request to generate new API key with current key
+    const response = await axios.post('/api/v1/generate-api-key', { key: currentKey }, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+    
+    console.log('New API Key generated:', response.data); // Optional: log the response
+    
+    // Fetch the updated API key after generating
+    await fetchApiKey();
+  } catch (error) {
+    console.error('Error generating new API key:', error);
+  }
+};
+
 const toggleApiKeyVisibility = () => {
   isApiKeyVisible.value = !isApiKeyVisible.value;
 };
@@ -43,6 +86,27 @@ onMounted(() => {
 const getMaskedApiKey = (key: string) => {
   return key ? `************${key.slice(-4)}` : '';
 };
+
+
+const deleteAccount = async () => {
+      try {
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await axios.delete('/api/v1/user', {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        });
+
+        if (response.status === 200) {
+          localStorage.removeItem('accessToken');
+          router.push({ name: 'home' });
+        } else {
+          console.error('Failed to delete account:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error deleting account:', error);
+      }
+    };
 </script>
 
 <template>
@@ -82,10 +146,27 @@ const getMaskedApiKey = (key: string) => {
         <!-- Toggle switch input End -->
 
         <!-- Time and date input Start -->
-        <DefaultCard cardTitle="Account">
+        <DefaultCard cardTitle="Others">
           <div class="flex flex-col gap-5.5 p-6.5">
-            <p class="">Logout</p>
-            <p class="text-red">Delete Account</p>
+            <p @click="router.push('/logout')" class="cursor-pointer">Logout</p>
+            <AlertDialog>
+              <AlertDialogTrigger as-child>
+            <p class="cursor-pointer text-red">Delete Account</p>
+              </AlertDialogTrigger>
+              <AlertDialogContent class="bg-white  dark:bg-boxdark">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete your
+                    account and remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction @click="deleteAccount">Delete Account</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </DefaultCard>
         <!-- Time and date input End -->
@@ -97,9 +178,12 @@ const getMaskedApiKey = (key: string) => {
         <DefaultCard cardTitle="API Key">
           <div class="flex flex-col gap-5.5 p-6.5">
             <div v-if="apiKey">
-              <p class="mt-2">API key: {{ isApiKeyVisible ? apiKey : getMaskedApiKey(apiKey) }}</p>
-              <Button class="mt-4" variant="outline" @click="toggleApiKeyVisibility">
+              <p class="mt-2">{{ isApiKeyVisible ? apiKey : getMaskedApiKey(apiKey) }}</p>
+              <Button class="mt-4 min-w-22" variant="outline" @click="toggleApiKeyVisibility">
                 {{ isApiKeyVisible ? 'Hide' : 'Show' }}
+              </Button>
+              <Button class="mt-4 ms-2" variant="outline" @click="generateNewApiKey">
+                Generate New API Key
               </Button>
             </div>
             <div v-else>
@@ -110,9 +194,9 @@ const getMaskedApiKey = (key: string) => {
         <!-- Textarea Fields End -->
 
         <!-- Checkbox and radio -->
-        <DefaultCard cardTitle="Checkbox and radio">
+        <DefaultCard cardTitle="Payments">
           <div class="flex flex-col gap-5.5 p-6.5">
-
+            <p class="mt-2">Change password</p>
           </div>
         </DefaultCard>
         <!-- Checkbox and radio -->

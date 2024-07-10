@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref} from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import DefaultAuthCard from '@/components/Auth/DefaultAuthCard.vue'
@@ -13,10 +13,9 @@ const password = ref('');
 const errormsg = ref('');
 
 const loginUser = async () => {
-
   if (password.value.length < 6) {
     errormsg.value = 'Wrong email or password.';
-  return;
+    return;
   }
 
   try {
@@ -47,6 +46,11 @@ const clearError = () => {
   errormsg.value = '';
 };
 
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    loginUser();
+  }
+};
 </script>
 
 <template>
@@ -91,6 +95,7 @@ const clearError = () => {
           <label class="mb-2.5 block font-medium text-black dark:text-white">Password</label>
           <div class="relative">
             <input
+              @keydown="handleKeyDown"
               v-model="password"
               name="Password"
               type="Password"
