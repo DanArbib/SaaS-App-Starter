@@ -1,18 +1,34 @@
 <script setup lang="ts">
 import { useSidebarStore } from '@/store/sidebar'
 import { onClickOutside } from '@vueuse/core'
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import SidebarItem from './SidebarItem.vue'
 import { useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button'
+import { useDarkModeStore } from '@/store/darkMode'
 
 const target = ref(null)
-const router = useRouter();
+const router = useRouter()
 const sidebarStore = useSidebarStore()
+const darkModeStore = useDarkModeStore()
+const profileImage = ref('')
+
+const getLogoSrc = () => {
+  return darkModeStore.darkMode ? 'src/assets/logo/logo-darkmode.png' : 'src/assets/logo/logo.png'
+}
+
+watch(() => darkModeStore.darkMode, () => {
+  profileImage.value = getLogoSrc()
+})
+
+onMounted(() => {
+  profileImage.value = getLogoSrc();
+});
 
 onClickOutside(target, () => {
   sidebarStore.isSidebarOpen = false
 })
+
 
 const menuGroups = ref([
   {
@@ -303,7 +319,7 @@ const menuGroups = ref([
     <!-- SIDEBAR HEADER -->
     <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
       <router-link to="/">
-        <img src="@/assets/logo/logo.png" alt="Logo" />
+        <img :src="profileImage" alt="Logo" />
       </router-link>
 
       <button class="block lg:hidden" @click="sidebarStore.isSidebarOpen = false">
