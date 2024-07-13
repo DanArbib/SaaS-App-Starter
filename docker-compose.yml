@@ -151,7 +151,7 @@ services:
     restart: always
     networks:
       - redis_net
-      - app-net
+      - api-net
     env_file:
       - ./.env
     environment:
@@ -186,7 +186,6 @@ services:
 
 volumes:
   postgress_db:
-  app-logs:
   loki_data:
   grafana_data:
   pgdamin-data:

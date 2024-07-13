@@ -12,6 +12,9 @@ import uuid
 import jwt
 import os
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify(status='ok'), 200
 
 ##############################################################################
 ############################### AUTHENTICATION ###############################

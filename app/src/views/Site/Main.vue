@@ -281,12 +281,12 @@ onMounted(() => {
 
           <div class="w-full px-4">
             <div
-              class="wow fadeInUp relative z-10 mx-auto max-w-[845px]"
+              class="wow fadeInUp relative z-10 mx-auto max-w-[1000px]"
               data-wow-delay=".25s"
             >
               <div class="mt-16">
                 <img
-                  src="@/assets/images/hero/hero-image.jpg"
+                  src="@/assets/img/main-hero-img.jpg"
                   alt="hero"
                   class="mx-auto max-w-full rounded-t-xl rounded-tr-xl"
                 />
