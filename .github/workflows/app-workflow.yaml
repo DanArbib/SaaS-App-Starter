@@ -10,6 +10,8 @@ on:
       - 'feature/*'
     paths:
       - 'app/**'
+    if: contains(github.event.head_commit.message, 'actions')
+      
 
 run-name: "${{ github.workflow }}:${{ github.run_number }}"
 
@@ -32,7 +34,7 @@ jobs:
       - name: Build Docker Image
         working-directory: ./app
         run: |
-          docker build -f ${{ APP_DOCKERFILE }} -t ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }} .
+          docker build -f ${{ env.APP_DOCKERFILE }} -t ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }} .
 
       - name: Determine APP Version
         if: github.ref == 'refs/heads/main'
