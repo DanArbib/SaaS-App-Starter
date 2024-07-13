@@ -1,0 +1,81 @@
+services:
+
+  # Postgres
+  pg:
+    hostname: pg
+    image: postgres:16.3-alpine3.20
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGDATA=${PGDATA}
+    networks:
+      - db-net
+    volumes:
+      - postgress_db:/var/lib/postgresql/data/db-files/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U flask_app" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Api  
+  api:
+    hostname: api
+    image_api:
+    volumes:
+      - ./logs:/app/app/logs
+    env_file:
+      - ./.env
+    depends_on:
+      pg:
+        condition: service_healthy
+    networks:
+      - db-net
+    restart: always
+    ports:
+      - "5000:5000"
+
+  # Redis  
+  redis:
+    hostname: redis
+    image: "redis:7.0.15-alpine"
+    restart: always
+    networks:
+      - redis_net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # RabbitMQ  
+  rabbit:
+    hostname: rabbit
+    image: "rabbitmq:3.13.3"
+    restart: always
+    networks:
+      - redis_net
+      - db-net
+    env_file:
+      - ./.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c '
+        rabbitmq-plugins enable rabbitmq_management;
+        rabbitmq-server
+      '
+
+volumes:
+  postgress_db:
+
+networks:
+  db-net:
+  redis_net:

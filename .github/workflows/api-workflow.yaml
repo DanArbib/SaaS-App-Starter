@@ -1,0 +1,133 @@
+name: api
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/*'
+    paths:
+      - 'api/**'
+
+run-name: "${{ github.workflow }}:${{ github.run_number }}"
+
+env:
+  ECR_URI: ""
+  AWS_REGION: "ap-south-1"
+  API_DOCKERFILE: "Dockerfile.api"
+  TESTING_COMPOSE: "docker-compose-testing.yml"
+  APP_NAME: "api"
+  BUILD_NUMBER: "${{ github.run_number }}"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        working-directory: ./api
+        run: |
+          docker build build -f ${{ API_DOCKERFILE }} -t ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }} .
+
+      - name: Setup Testing Environment
+        run: |
+          mv env.example .env
+          sed -i 's/image_api:.*$/image: ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }}/' docker-compose-testing.yml
+          docker compose -f ${{ TESTING_COMPOSE }} up -d
+
+      - name: Run E2E Tests
+        working-directory: ./api
+        run: |
+          chmod +x ./tests/e2e.sh
+          ./tests/e2e.sh localhost:5000
+
+      - name: Fetch tags
+        run: git fetch --prune --unshallow --tags
+
+      - name: Determine API Version
+        if: github.ref == 'refs/heads/main'
+        id: version
+        run: |
+          commit_msg=$(git log -1 --pretty=%B | tr -d '\n')
+          echo "Commit Message: $commit_msg"
+          
+          last_tag=$(git tag --list 'api-[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n 1)
+          echo "Last tag: $last_tag"
+          
+          if [ -z "$last_tag" ]; then
+            new_version="api-1.0.0"
+          else
+            major=$(echo "$last_tag" | cut -d- -f2 | cut -d. -f1)
+            minor=$(echo "$last_tag" | cut -d- -f2 | cut -d. -f2)
+            patch=$(( $(echo "$last_tag" | cut -d- -f2 | cut -d. -f3) + 1 ))
+            new_version="api-$major.$minor.$patch"
+          fi
+          echo "New API Version: $new_version"
+          echo "version=$new_version" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Configure AWS Credentials
+        if: github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Authenticate Docker ECR
+        if: github.ref == 'refs/heads/main'
+        run: aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_URI }}
+
+      - name: Tag and Push Image to ECR
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker tag ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }} ${{ env.ECR_URI }}:${{ steps.version.outputs.version }}
+          docker push ${{ env.ECR_URI }}:${{ steps.version.outputs.version }}
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          fetch-depth: 0
+          ref: 'main'
+          token: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Checkout application repository
+        uses: actions/checkout@v4
+        with:
+          path: application-repo
+
+      - name: Download yq
+        run: |
+          sudo sh -c 'wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq'
+
+      - name: Update deploy
+        run: |
+          # UPDATE DEPLOY FILES WITH YQ
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # ADD FILES WITH CHANGES
+          git commit -m "API version - ${{ needs.build.outputs.version }}"
+          git push origin main
+
+      - name: Tag Commit
+        working-directory: application-repo
+        run: |
+          git clean -f -x
+          git tag api-${{ needs.build.outputs.version }}
+          git push origin api-${{ needs.build.outputs.version }}
+
