@@ -262,6 +262,15 @@ export default {
       keyframes: {
         linspin: {
           '100%': { transform: 'rotate(360deg)' }
+          
+        },
+        'accordion-down': {
+          from: { height: 0 },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: 0 },
         },
         easespin: {
           '12.5%': { transform: 'rotate(135deg)' },
@@ -307,7 +316,9 @@ export default {
         bottomtop: 'bottomtop 60s infinite alternate linear',
         'spin-1.5': 'spin 1.5s linear infinite',
         'spin-2': 'spin 2s linear infinite',
-        'spin-3': 'spin 3s linear infinite'
+        'spin-3': 'spin 3s linear infinite',
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       }
     }
   },

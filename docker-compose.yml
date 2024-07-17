@@ -151,7 +151,7 @@ services:
     restart: always
     networks:
       - redis_net
-      - api-net
+      - app-net
     env_file:
       - ./.env
     environment:
