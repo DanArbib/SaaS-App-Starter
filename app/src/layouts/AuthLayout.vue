@@ -34,7 +34,8 @@ onMounted(() => {
 <style scoped>
 .tpl {
   /* background: url("@/assets/img/bg.webp"); */
-  background-color: rgb(55 88 249 / 1);
+  /* background-color: rgb(55 88 249 / 1); */
+  background-color: hsl(0,0%,13%);
   /* background: linear-gradient(12deg, rgb(155, 81, 224) 0%, rgba(7, 146, 227, 0.58) 100%, rgba(156, 82, 225, 0) 100%); */
 }
 </style>

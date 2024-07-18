@@ -8,7 +8,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'home',
     component: () => import('@/views/Site/Main.vue'),
     meta: {
-      title: 'home',
+      title: import.meta.env.VITE_APP_SLOGAN,
     },
   },
   {
@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'auth',
     component: () => import('@/views/Auth/Auth.vue'),
     meta: {
-      title: 'auth',
+      title: 'Auth',
     },
   },
   {
@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/Auth/Signin.vue'),
     props: route => ({ email: route.query.email}),
     meta: {
-      title: 'signin',
+      title: 'Sign In',
     },
   },
   {
@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/Auth/Signup.vue'),
     props: route => ({ email: route.query.email}),
     meta: {
-      title: 'signup',
+      title: 'Sign Up',
     },
   },
   {
@@ -42,7 +42,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'resetPasswordRequest',
     component: () => import('@/views/Auth/ResetPassRequest.vue'),
     meta: {
-      title: 'reset-password-request',
+      title: 'Reset Password',
     },
   },
   {
@@ -51,7 +51,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/Auth/ResetPass.vue'),
     props: route => ({ token: route.query.t}),
     meta: {
-      title: 'reset-password',
+      title: 'Reset Password',
     },
   },
   {
@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/Auth/handleAuth.vue'),
     props: route => ({ token: route.query.t}),
     meta: {
-      title: 'handleAuth',
+      title: 'Auth',
     },
   },
   // Application
@@ -69,7 +69,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'app',
     component: () => import('@/views/Dashboard/Main.vue'),
     meta: {
-      title: 'app',
+      title: 'Dashboard',
       requiresAuth: true,
     },
   },
@@ -78,7 +78,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'profile',
     component: () => import('@/views/Dashboard/Profile.vue'),
     meta: {
-      title: 'profile',
+      title: 'My Profile',
       requiresAuth: true,
     },
   },
@@ -87,7 +87,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'settings',
     component: () => import('@/views/Dashboard/Settings.vue'),
     meta: {
-      title: 'profile',
+      title: 'Settings',
       requiresAuth: true,
     },
   },
@@ -96,7 +96,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'subscribe',
     component: () => import('@/views/Dashboard/Subscribe.vue'),
     meta: {
-      title: 'subscribe',
+      title: 'Subscribe',
       requiresAuth: true,
     },
   },
@@ -164,6 +164,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, __, next) => {
   const authStore = useAuthStore();
+  const appName = import.meta.env.VITE_APP_NAME || 'App';
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     await authStore.getUserInfo();
@@ -175,6 +176,13 @@ router.beforeEach(async (to, __, next) => {
     }
   } else {
     next();
+  }
+
+  // Set the document title based on the route's meta title
+  if (to.meta.title) {
+    document.title = `${appName} - ${to.meta.title}`;
+  } else {
+    document.title = appName;
   }
 });
 

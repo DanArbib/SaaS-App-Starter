@@ -5,9 +5,8 @@ import App from './App.vue'
 import axios from 'axios'
 import router from '@/router'
 
-// Base URL for Axios requests
-axios.defaults.baseURL = 'http://localhost:5000'; // dev
-// axios.defaults.baseURL = '/api'; // prod
+// Set Axios base URL from environment variable
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
 createApp(App)
   .use(router)

@@ -2,12 +2,57 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>App</title>
-  </head>
-  <body >
-    <div id="app"></div>
+
+    <!-- Primary Meta Tags -->
+    <title id="app-title"></title>
+    <meta name="title" content="" id="meta-title">
+    <meta name="description" content="" id="meta-description">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="" id="og-url">
+    <meta property="og:title" content="" id="og-title">
+    <meta property="og:description" content="" id="og-description">
+    <meta property="og:image" content="/social-1200x630.jpg" id="og-image">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="" id="twitter-url">
+    <meta property="twitter:title" content="" id="twitter-title">
+    <meta property="twitter:description" content="" id="twitter-description">
+    <meta property="twitter:image" content="/social-1200x630.jpg" id="twitter-image">
+
+    <!-- Canonical Tag -->
+    <link rel="canonical" href="" id="canonical-url">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="keywords" content="" id="meta-keywords">
+    <meta name="author" content="" id="meta-author">
+
+    <!-- Load your app's main file -->
     <script type="module" src="/src/main.ts"></script>
+    <script type="module">
+      import.meta.env.VITE_APP_NAME && (document.getElementById('app-title').innerText = import.meta.env.VITE_APP_NAME);
+      import.meta.env.VITE_APP_NAME && (document.getElementById('meta-title').content = import.meta.env.VITE_APP_NAME);
+      import.meta.env.VITE_APP_DESCRIPTION && (document.getElementById('meta-description').content = import.meta.env.VITE_APP_DESCRIPTION);
+      window.location.href && (document.getElementById('og-url').content = window.location.href);
+      import.meta.env.VITE_APP_NAME && (document.getElementById('og-title').content = import.meta.env.VITE_APP_NAME);
+      import.meta.env.VITE_APP_DESCRIPTION && (document.getElementById('og-description').content = import.meta.env.VITE_APP_DESCRIPTION);
+      window.location.href && (document.getElementById('twitter-url').content = window.location.href);
+      import.meta.env.VITE_APP_NAME && (document.getElementById('twitter-title').content = import.meta.env.VITE_APP_NAME);
+      import.meta.env.VITE_APP_DESCRIPTION && (document.getElementById('twitter-description').content = import.meta.env.VITE_APP_DESCRIPTION);
+      window.location.href && (document.getElementById('canonical-url').href = window.location.href);
+      import.meta.env.VITE_APP_KEYWORDS && (document.getElementById('meta-keywords').content = import.meta.env.VITE_APP_KEYWORDS);
+      import.meta.env.VITE_APP_NAME && (document.getElementById('meta-author').content = import.meta.env.VITE_APP_NAME);
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
   </body>
 </html>

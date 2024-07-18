@@ -206,7 +206,7 @@ const clearError = () => {
             <div>
               <p>Subscription: {{ authStore.userData.subscription}}</p>
               <p>Remaining credits: {{ authStore.userData.credits}}</p>
-              <Button as-child class="mt-4 text-white text-base">
+              <Button as-child class="mt-4 text-white text-base ">
                 <a @click="router.push({ name: 'subscribe' })">
                   Purchase Credits
                 </a>

@@ -4,7 +4,7 @@ import { ref, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/auth';
 import { createAvatar, Result } from '@dicebear/core';
-import { avataaars } from '@dicebear/collection';
+import { initials } from '@dicebear/collection';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -16,12 +16,11 @@ onClickOutside(target, () => {
 });
 
 const generateAvatar = (seed: string): Result => {
-  return createAvatar(avataaars, {
+  return createAvatar(initials, {
     backgroundColor: ["b6e3f4", "c0aede", "d1d4f9"],
     backgroundType: ["gradientLinear", "solid"],
     size: 150,
     scale: 100,
-    style: ['circle'],
     seed,
   });
 };
@@ -34,7 +33,7 @@ const avatarDataUri = computed(() => {
   return undefined;
 });
 
-watch(() => authStore.userData.avatar, (newAvatar) => {
+watch(() => authStore.userData.user, (newAvatar) => {
   if (newAvatar) {
     avatar.value = generateAvatar(newAvatar);
   } else {
@@ -43,7 +42,7 @@ watch(() => authStore.userData.avatar, (newAvatar) => {
 });
 
 if (authStore.userData.avatar) {
-  avatar.value = generateAvatar(authStore.userData.avatar);
+  avatar.value = generateAvatar(authStore.userData.user);
 }
 </script>
 
@@ -59,8 +58,8 @@ if (authStore.userData.avatar) {
         <span class="block text-xs font-medium">My credit: {{ authStore.userData.credits }}</span>
       </span>
 
-      <span class="h-12 w-12 rounded-full">
-        <img :src="avatarDataUri" alt="User" />
+      <span class="h-10 w-10 ">
+        <img class="rounded-full" :src="avatarDataUri" alt="User" />
       </span>
 
   

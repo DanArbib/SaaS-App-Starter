@@ -6,8 +6,8 @@ import '@/assets/css/animate.css';
 const wow = new WOW({});
 wow.init();
 
+// FAQ 
 const defaultValue = 'item-1'
-
 const accordionItems = [
   { value: 'item-1', title: 'Is it accessible?', content: 'Yes. It adheres to the WAI-ARIA design pattern.' },
   { value: 'item-2', title: 'Is it unstyled?', content: 'Yes. It\'s unstyled by default, giving you freedom over the look and feel.' },
@@ -18,10 +18,8 @@ const accordionItems = [
 
 <template>
     <!-- ====== Navbar Section Start -->
-    <div
-      class="ud-header absolute left-0 top-0 z-40 flex w-full items-center bg-transparent"
-    >
-    <NavBar></NavBar>
+    <div class="ud-header absolute left-0 top-0 z-40 flex w-full items-center bg-transparent">
+      <NavBar></NavBar>
     </div>
     <!-- ====== Navbar Section End -->
 
@@ -1266,9 +1264,9 @@ const accordionItems = [
                 Features
               </span>
               <h2
-                class="mb-3 text-3xl font-bold text-dark dark:text-white sm:text-4xl md:text-[40px] md:leading-[1.2]"
+                class="mb-6 text-3xl font-bold text-dark dark:text-white sm:text-4xl md:text-[40px] md:leading-[1.2]"
               >
-                Main Features Of Play
+                Main Features
               </h2>
               <p class="text-base text-body-color dark:text-dark-6">
                 There are many variations of passages of Lorem Ipsum available
@@ -1306,7 +1304,7 @@ const accordionItems = [
                 Lorem Ipsum is simply dummy text of the printing and industry.
               </p>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="text-base font-medium text-dark hover:text-primary dark:text-white dark:hover:text-primary"
               >
                 Learn More
@@ -1341,7 +1339,7 @@ const accordionItems = [
                 Lorem Ipsum is simply dummy text of the printing and industry.
               </p>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="text-base font-medium text-dark hover:text-primary dark:text-white dark:hover:text-primary"
               >
                 Learn More
@@ -1408,7 +1406,7 @@ const accordionItems = [
                 Lorem Ipsum is simply dummy text of the printing and industry.
               </p>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="text-base font-medium text-dark hover:text-primary dark:text-white dark:hover:text-primary"
               >
                 Learn More
@@ -1455,7 +1453,7 @@ const accordionItems = [
                 Lorem Ipsum is simply dummy text of the printing and industry.
               </p>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="text-base font-medium text-dark hover:text-primary dark:text-white dark:hover:text-primary"
               >
                 Learn More
@@ -1492,7 +1490,7 @@ const accordionItems = [
                   majority have suffered in some form.
                 </p>
                 <a
-                  href="javascript:void(0)"
+                  href="/"
                   class="inline-block rounded-md border border-transparent bg-white px-7 py-3 text-base font-medium text-dark transition hover:bg-gray-2 hover:text-body-color"
                 >
                   Start using XXXXX
@@ -1634,7 +1632,7 @@ const accordionItems = [
                 </div>
               </div>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="inline-block rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white transition hover:bg-blue-dark"
               >
                 Purchase Now
@@ -1686,7 +1684,7 @@ const accordionItems = [
                 </div>
               </div>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="inline-block rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white transition hover:bg-blue-dark"
               >
                 Purchase Now
@@ -1733,7 +1731,7 @@ const accordionItems = [
                 </div>
               </div>
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="inline-block rounded-md bg-primary px-7 py-3 text-center text-base font-medium text-white transition hover:bg-blue-dark"
               >
                 Purchase Now
@@ -1903,7 +1901,7 @@ const accordionItems = [
           <div class="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-4/12 xl:w-4/12">
             <div class="mb-10 w-full">
               <a
-                href="javascript:void(0)"
+                href="/"
                 class="mb-6 inline-block max-w-[160px]"
               >
                 <img
@@ -1918,7 +1916,7 @@ const accordionItems = [
               </p>
               <div class="-mx-3 flex items-center">
                 <a
-                  href="javascript:void(0)"
+                  href="/"
                   class="px-3 text-gray-7 hover:text-white"
                 >
                   <svg
@@ -1935,7 +1933,7 @@ const accordionItems = [
                   </svg>
                 </a>
                 <a
-                  href="javascript:void(0)"
+                  href="/"
                   class="px-3 text-gray-7 hover:text-white"
                 >
                   <svg
@@ -1952,7 +1950,7 @@ const accordionItems = [
                   </svg>
                 </a>
                 <a
-                  href="javascript:void(0)"
+                  href="/"
                   class="px-3 text-gray-7 hover:text-white"
                 >
                   <svg
@@ -1975,7 +1973,7 @@ const accordionItems = [
                   </svg>
                 </a>
                 <a
-                  href="javascript:void(0)"
+                  href="/"
                   class="px-3 text-gray-7 hover:text-white"
                 >
                   <svg
@@ -2027,19 +2025,11 @@ const accordionItems = [
           </div>
           <div class="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div class="mb-10 w-full">
-              <h4 class="mb-9 text-lg font-semibold text-white">Features</h4>
+              <h4 class="mb-9 text-lg font-semibold text-white">Information</h4>
               <ul>
                 <li>
                   <a
-                    href="javascript:void(0)"
-                    class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
-                  >
-                    How it works
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="javascript:void(0)"
+                    href="/"
                     class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     Privacy policy
@@ -2047,18 +2037,10 @@ const accordionItems = [
                 </li>
                 <li>
                   <a
-                    href="javascript:void(0)"
+                    href="/"
                     class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="javascript:void(0)"
-                    class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
-                  >
-                    Refund policy
                   </a>
                 </li>
               </ul>
@@ -2067,12 +2049,12 @@ const accordionItems = [
           <div class="w-full px-4 sm:w-1/2 md:w-1/2 lg:w-3/12 xl:w-2/12">
             <div class="mb-10 w-full">
               <h4 class="mb-9 text-lg font-semibold text-white">
-                Our Products
+                Features
               </h4>
               <ul>
                 <li>
                   <a
-                    href="javascript:void(0)"
+                    href="/"
                     class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     LineIcons
@@ -2080,7 +2062,7 @@ const accordionItems = [
                 </li>
                 <li>
                   <a
-                    href="javascript:void(0)"
+                    href="/"
                     class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     Ecommerce HTML
@@ -2088,7 +2070,7 @@ const accordionItems = [
                 </li>
                 <li>
                   <a
-                    href="javascript:void(0)"
+                    href="/"
                     class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     TailAdmin
@@ -2096,7 +2078,7 @@ const accordionItems = [
                 </li>
                 <li>
                   <a
-                    href="javascript:void(0)"
+                    href="/"
                     class="mb-3 inline-block text-base text-gray-7 hover:text-primary"
                   >
                     PlainAdmin
@@ -3507,24 +3489,6 @@ body {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 
-.bg-primary{
-  --tw-bg-opacity: 1;
-  background: hsl(0,0%,13%);
-  /* background: #3C50E0; */
-}
-
-.bg-primary\/5{
-  background-color: rgb(55 88 249 / 0.05);
-}
-
-.bg-primary\/\[0\.08\]{
-  background-color: rgb(55 88 249 / 0.08);
-}
-
-.bg-secondary{
-  --tw-bg-opacity: 1;
-  background-color: rgb(19 194 150 / var(--tw-bg-opacity));
-}
 
 .bg-stroke{
   --tw-bg-opacity: 1;
