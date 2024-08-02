@@ -16,6 +16,7 @@ export default {
     },
     extend: {
       colors: {
+        'custom-gradient': 'linear-gradient(150deg, rgba(120, 86, 255, 0.50) 3.73%, rgba(202, 219, 253, 0.50) 15.66%, rgba(213, 202, 253, 0.50) 23.05%, rgba(213, 202, 253, 0.50) 31.04%, rgba(202, 204, 253, 0.50) 47.62%, rgba(213, 202, 253, 0.50) 61.07%, rgba(234, 202, 253, 0.50) 68.98%, rgba(202, 219, 253, 0.50) 75.32%, rgba(120, 86, 255, 0.50) 97.26%), var(--color-gray-0, #FFF)',
         current: 'currentColor',
         transparent: 'transparent',
         white: '#FFFFFF',
